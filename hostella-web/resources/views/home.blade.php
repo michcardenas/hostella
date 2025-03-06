@@ -6,20 +6,38 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="hero-section position-relative">
-        <div class="hero-image" style="background-image: url('{{ asset('images/hero-bg.jpg') }}');">
-            <div class="hero-overlay"></div>
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-lg-7 text-white">
-                        <h1 class="display-4 fw-bold">Descubre Propiedades Exclusivas</h1>
-                        <p class="lead my-4">Villas y propiedades de lujo cuidadosamente seleccionadas para ofrecerte una experiencia inolvidable</p>
-                        <a href="{{ route('properties.index') }}" class="btn btn-lg btn-primary">Ver propiedades</a>
+    @if(count($featuredImages) > 0)
+    <div class="carousel-container position-relative">
+        <!-- Carrusel -->
+        <div id="carouselProperties" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @foreach($featuredImages as $index => $image)
+                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                        <img src="{{ $image }}" class="d-block w-100 carousel-image" alt="Propiedad">
                     </div>
-                </div>
+                @endforeach
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProperties" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselProperties" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
         </div>
-    </section>
+
+        <!-- Contenido superpuesto -->
+        <div class="carousel-overlay text-center">
+            <h1 class="display-4 fw-bold text-white">Descubre Propiedades Exclusivas</h1>
+            <h2 class="lead text-white">Explora villas y alojamientos de lujo en los mejores destinos</h2>
+            <a href="{{ route('properties.index') }}" class="btn  btn-primary mt-3">Ver Propiedades</a>
+            </div>
+    </div>
+@else
+    <p class="text-center text-danger">No se encontraron imágenes de propiedades.</p>
+@endif
+
 
     <!-- Search Section -->
     <section class="py-5 bg-light">

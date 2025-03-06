@@ -31,4 +31,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    
+    // Capturar todas las imágenes del carrusel
+    let images = [];
+        let currentIndex = 0;
+        let modal = new bootstrap.Modal(document.getElementById('imageModal'));
+
+        // Capturar imágenes del carrusel y abrir en el modal
+        document.querySelectorAll(".carousel-img").forEach((img, index) => {
+            img.addEventListener("click", function () {
+                images = Array.from(document.querySelectorAll(".carousel-img")).map(img => img.getAttribute("data-bs-img"));
+                currentIndex = index;
+                updateModalImage();
+                modal.show();
+            });
+        });
+
+        // Actualiza la imagen del modal
+        function updateModalImage() {
+            let modalImage = document.getElementById("modalImage");
+            modalImage.src = images[currentIndex];
+            modalImage.classList.remove("zoomed");
+        }
+
+        // Navegar entre imágenes
+        document.getElementById("prevImage").addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateModalImage();
+            }
+        });
+
+        document.getElementById("nextImage").addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                updateModalImage();
+            }
+        });
+
+        // Zoom en la imagen al hacer clic
+        document.getElementById("modalImage").addEventListener("click", function () {
+            this.classList.toggle("zoomed");
+        });
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById("imageModal").addEventListener("click", function (e) {
+            if (e.target.id === "imageModal") {
+                modal.hide();
+            }
+        });
+
+        // Eliminar la capa negra al cerrar el modal
+        document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop')?.remove();
+        });
+
+
+
 });
+
+

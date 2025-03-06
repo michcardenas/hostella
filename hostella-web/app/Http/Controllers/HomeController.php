@@ -17,25 +17,55 @@ class HomeController extends Controller
     /**
      * Mostrar la página de inicio
      */
-    public function index()
+   
+     public function index()
+     {
+         try {
+             // Obtener propiedades sin "sort"
+             $featuredProperties = $this->guestyService->getListings([
+                 'limit' => 4 // Eliminamos el parámetro "sort" porque no es permitido
+             ]);
+     
+             // Extraer imágenes
+             $featuredImages = $this->getFeaturedImages($featuredProperties['results'] ?? []);
+     
+             return view('home', [
+                 'featuredProperties' => $featuredProperties['results'] ?? [],
+                 'featuredImages' => $featuredImages
+             ]);
+         } catch (\Exception $e) {
+             \Log::error('Error al obtener propiedades:', ['error' => $e->getMessage()]);
+             return view('home', [
+                 'featuredProperties' => [],
+                 'featuredImages' => []
+             ]);
+         }
+     }
+     
+
+
+    /**
+     * Obtener imágenes de propiedades destacadas
+     */
+    private function getFeaturedImages(array $properties)
     {
-        // Obtener propiedades destacadas (limitado a 3-4)
-        try {
-            $featuredProperties = $this->guestyService->getListings([
-                'limit' => 4,
-                'sort' => '-reviews.avg' // Ordenar por mejor calificación
-            ]);
-            
-            return view('home', [
-                'featuredProperties' => $featuredProperties['results'] ?? []
-            ]);
-        } catch (\Exception $e) {
-            // Si hay un error, mostrar la página de inicio sin propiedades
-            return view('home', [
-                'featuredProperties' => []
-            ]);
+        $images = [];
+    
+        foreach ($properties as $property) {
+            if (isset($property['pictures']) && is_array($property['pictures'])) {
+                foreach ($property['pictures'] as $picture) {
+                    if (!empty($picture['original'])) {
+                        $images[] = $picture['original'];
+                    }
+                }
+            }
         }
+    
+        \Log::info('Imágenes obtenidas:', $images); // Ver imágenes en logs
+        return $images;
     }
+    
+    
 
     /**
      * Mostrar la página Acerca de

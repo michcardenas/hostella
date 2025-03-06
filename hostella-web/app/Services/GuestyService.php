@@ -20,7 +20,7 @@ class GuestyService
     }
 
     /**
-     * Get all listings from Guesty API
+     * Obtener todas las propiedades desde la API de Guesty
      */
     public function getListings($params = [])
     {
@@ -28,7 +28,7 @@ class GuestyService
     }
 
     /**
-     * Get a specific listing by ID
+     * Obtener una propiedad específica por ID
      */
     public function getListing($id)
     {
@@ -36,25 +36,34 @@ class GuestyService
     }
 
     /**
-     * Make API request to Guesty
+     * Crear una nueva reserva en Guesty
+     */
+    public function createReservation(array $reservationData)
+    {
+        return $this->makeRequest('POST', '/reservations', [], $reservationData);
+    }
+
+    /**
+     * Método genérico para hacer solicitudes a la API de Guesty
      */
     protected function makeRequest($method, $endpoint, $queryParams = [], $data = null)
     {
         $url = $this->baseUrl . $endpoint;
         
-        // Obtener el token actualizado
+        // Obtener un token actualizado
         $token = $this->tokenService->getToken();
         
         if (!$token) {
             throw new \Exception('No se pudo obtener un token válido para Guesty API');
         }
-        
+
         Log::debug("Guesty API Request", [
             'method' => $method,
             'url' => $url,
-            'params' => $queryParams
+            'params' => $queryParams,
+            'data' => $data
         ]);
-        
+
         $response = Http::withHeaders([
             'Authorization' => "{$this->tokenType} {$token}",
             'Content-Type' => 'application/json',
