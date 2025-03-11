@@ -295,3 +295,36 @@ body {
     top: 15px;
     z-index: 20;
 }
+.see-more {
+    cursor: pointer;
+    font-weight: bold;
+}
+.calendar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Centra el calendario horizontalmente */
+    justify-content: center;  /* Centra verticalmente si es necesario */
+    width: 100%;
+}
+  /* 📌 Hace que el formulario baje con el scroll */
+  .sticky-form {
+    position: sticky;
+    top: 80px; /* Ajusta según la altura del navbar */
+    z-index: 10;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#calendar {
+    width: 100%;
+    max-width: 320px;
+}

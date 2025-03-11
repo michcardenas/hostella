@@ -34,15 +34,79 @@ class GuestyService
     {
         return $this->makeRequest('GET', "/listings/{$id}");
     }
+    public function getListingCalendar($id, $from, $to)
+    {
+        return $this->makeRequest('GET', "/listings/{$id}/calendar", [
+            'from' => $from,
+            'to' => $to
+        ]);
+    }
 
+    
+    
     /**
      * Crear una nueva reserva en Guesty
      */
-    public function createReservation(array $reservationData)
+    public function createReservation($reservationData)
     {
-        return $this->makeRequest('POST', '/reservations', [], $reservationData);
+        try {
+            $endpoint = "/reservations";
+            $response = $this->makeRequest('POST', $endpoint, [], $reservationData);
+    
+            if ($response['success']) {
+                return $response['data'];
+            } else {
+                return ['error' => $response['data']];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error al crear la reserva en Guesty: ' . $e->getMessage());
+            return ['error' => ['message' => 'Error inesperado al procesar la reserva']];
+        }
     }
+    public function getReservationPrice($listingId, $checkIn, $checkOut, $guestsCount = 2)
+{
+    return $this->makeRequest('GET', '/reservations/money', [
+        'listingId' => $listingId,
+        'checkIn' => $checkIn,
+        'checkOut' => $checkOut,
+        'guestsCount' => $guestsCount
+    ]);
+}
+public function createReservationQuote($listingId, $checkIn, $checkOut, $guestsCount = 1, $coupons = null)
+{
+    $payload = [
+        'listingId' => $listingId,
+        'checkInDateLocalized' => $checkIn,
+        'checkOutDateLocalized' => $checkOut,
+        'guestsCount' => $guestsCount
+    ];
+    
+    if ($coupons) {
+        $payload['coupons'] = $coupons;
+    }
+    
+    return $this->makeRequest('POST', '/reservations/quotes', [], $payload);
+}
 
+public function getGuestPortalUrl($quoteId, $returnUrl)
+{
+    $payload = [
+        'returnUrl' => $returnUrl
+    ];
+    
+    try {
+        $response = $this->makeRequest('POST', "/reservations/quotes/{$quoteId}/guest-portal-link", [], $payload);
+        
+        if (isset($response['portalUrl'])) {
+            return $response['portalUrl'];
+        } else {
+            throw new \Exception('La respuesta no contiene la URL del portal');
+        }
+    } catch (\Exception $e) {
+        \Log::error('Error al obtener URL del portal de Guesty: ' . $e->getMessage());
+        throw new \Exception('No se pudo obtener el enlace al portal de reservas: ' . $e->getMessage());
+    }
+}
     /**
      * Método genérico para hacer solicitudes a la API de Guesty
      */

@@ -34,6 +34,12 @@ Route::get('/propiedades/{id}', [PropertiesController::class, 'show'])->name('pr
 Route::get('/propiedades/{id}/reservar', [PropertiesController::class, 'showReservationForm'])->name('properties.reservation');
 Route::post('/propiedades/{id}/reservar', [PropertiesController::class, 'createReservation'])->name('properties.reserve');
 
+//Cotizar
+Route::post('/properties/calculate-price', [PropertiesController::class, 'calculatePrice'])->name('properties.calculatePrice');
+Route::post('/properties/create-quote', [PropertiesController::class, 'createQuote'])->name('properties.createQuote');
+Route::post('/properties/redirect-to-portal', [PropertiesController::class, 'redirectToGuestPortal'])->name('properties.redirect-to-portal');
+Route::get('/booking/confirmation', [BookingController::class, 'confirmation'])->name('booking.confirmation');
+
 
 // Reservas
 Route::get('/book/{propertyId}', [ReservationController::class, 'create'])->name('reservations.create');

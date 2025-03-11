@@ -4,165 +4,329 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="row">
-        <!-- Galería de imágenes -->
+    <!-- Título de la propiedad -->
+    <h1 class="fw-bold text-center">{{ $property['title'] ?? 'Sin título' }}</h1>
+    <p class="text-muted text-center"><i class="fas fa-map-marker-alt"></i> {{ $property['address']['full'] ?? 'Ubicación no disponible' }}</p>
+
+    <!-- Galería de imágenes -->
+    <div class="row g-2">
+        @if(isset($property['pictures']) && count($property['pictures']) >= 4)
+            <div class="col-md-6">
+                <img src="{{ $property['pictures'][0]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                     class="img-fluid rounded w-100 h-100 object-fit-cover">
+            </div>
+            <div class="col-md-3">
+                <img src="{{ $property['pictures'][1]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                     class="img-fluid rounded w-100 mb-2 object-fit-cover">
+                <img src="{{ $property['pictures'][2]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                     class="img-fluid rounded w-100 object-fit-cover">
+            </div>
+            <div class="col-md-3">
+                <img src="{{ $property['pictures'][3]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                     class="img-fluid rounded w-100 h-100 object-fit-cover">
+            </div>
+        @else
+            <div class="col-12">
+                <img src="{{ asset('images/property-placeholder.jpg') }}" class="img-fluid rounded w-100">
+            </div>
+        @endif
+    </div>
+
+    <div class="text-center mt-2">
+        <button class="btn btn-link text-decoration-none" data-bs-toggle="modal" data-bs-target="#imageModal">Ver todas las imágenes</button>
+    </div>
+
+    <!-- Contenedor de información y formulario sticky -->
+    <div class="row mt-4">
         <div class="col-md-7">
-            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    @foreach($property['pictures'] as $index => $picture)
-                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                            <img src="{{ $picture['original'] ?? asset('images/property-placeholder.jpg') }}" 
-                                 class="d-block w-100 rounded carousel-img"
-                                 alt="Imagen de la propiedad"
-                                 data-bs-toggle="modal" data-bs-target="#imageModal"
-                                 data-bs-img="{{ $picture['original'] }}">
-                        </div>
-                    @endforeach
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Información de la propiedad -->
-        <div class="col-md-5">
-            <h1 class="fw-bold">{{ $property['title'] ?? 'Sin título' }}</h1>
-            <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $property['address']['full'] ?? 'Ubicación no disponible' }}</p>
-
-            <!-- Precios -->
-            <div class="bg-light p-3 rounded">
-                <h3 class="fw-bold">${{ $property['prices']['basePrice'] ?? 'N/A' }} <small class="text-muted">/ noche</small></h3>
+            <div class="bg-light p-3 rounded mb-3">
+                <h3 class="fw-bold">${{ $property['prices']['basePrice'] ?? 'N/A' }} <small>/ noche</small></h3>
                 <p class="text-muted">Moneda: {{ $property['prices']['currency'] ?? 'USD' }}</p>
+            </div>
+
+            <ul class="list-unstyled">
+                <li><strong>Habitaciones:</strong> {{ $property['bedrooms'] }}</li>
+                <li><strong>Camas:</strong> {{ $property['beds'] }}</li>
+                <li><strong>Baños:</strong> {{ $property['bathrooms'] }}</li>
+                <li><strong>Capacidad máxima:</strong> {{ $property['accommodates'] }} huéspedes</li>
+            </ul>
+
+            <!-- Sección de detalles con "Ver más" -->
+            @php
+                $sections = [
+                    'summary' => 'Descripción',
+                    'space' => 'Espacio',
+                    'neighborhood' => 'Ubicación',
+                    'houseRules' => 'Reglas de la Casa'
+                ];
+            @endphp
             
-            </div>
-
-            <a href="{{ route('properties.reservation', $property['_id']) }}" class="btn btn-primary btn-lg w-100">
-    Reservar Ahora
-</a>
+            @foreach ($sections as $key => $title)
+                @php
+                    $content = $property['publicDescription'][$key] ?? 'No disponible';
+                    $shortContent = Str::limit($content, 200);
+                @endphp
+                <h4>{{ $title }}</h4>
+                <p id="{{ $key }}">
+                    <span class="short-text">{{ $shortContent }}</span>
+                    <span class="d-none full-text">{{ $content }}</span>
+                    @if(strlen($content) > 200)
+                        <a href="#" class="text-primary see-more" data-target="{{ $key }}">Ver más</a>
+                    @endif
+                </p>
+            @endforeach
         </div>
-    </div>
 
-    <!-- Sección de Información con Ver Más -->
-    <div class="row mt-5">
-        <div class="col-md-8">
-            <h2>Descripción</h2>
-            @php
-                $summary = $property['publicDescription']['summary'] ?? 'No disponible';
-                $summaryShort = Str::limit($summary, 200);
-            @endphp
-            <p class="text-content" id="summary">
-                <span class="short-text">{{ $summaryShort }}</span>
-                <span class="d-none full-text">{{ $summary }}</span>
-                @if(strlen($summary) > 200)
-                    <a href="#" class="text-primary see-more" data-target="summary">Ver más</a>
-                @endif
-            </p>
+       <!-- 📌 FORMULARIO STICKY PARA RESERVAR -->
+       <div class="col-md-5">
+            <div class="sticky-form">
+                <div class="calendar-container text-center">
+                    <div id="calendar"></div>
+                    <form id="reservationForm" action="{{ route('properties.reserve', $property['_id']) }}" method="POST" class="mt-3">
+                        @csrf
+                        <input type="hidden" id="checkIn" name="checkIn">
+                        <input type="hidden" id="checkOut" name="checkOut">
 
-            <h4>Espacio</h4>
-            @php
-                $space = $property['publicDescription']['space'] ?? 'No disponible';
-                $spaceShort = Str::limit($space, 200);
-            @endphp
-            <p class="text-content" id="space">
-                <span class="short-text">{{ $spaceShort }}</span>
-                <span class="d-none full-text">{{ $space }}</span>
-                @if(strlen($space) > 200)
-                    <a href="#" class="text-primary see-more" data-target="space">Ver más</a>
-                @endif
-            </p>
+                        <!-- 🏠 Datos del Huésped -->
+                        <h5 class="mb-2">Datos del Huésped</h5>
+                        <div class="mb-2 form-floating">
+                            <input type="text" id="guestName" name="guest[name]" class="form-control" required placeholder="Nombre Completo">
+                            <label for="guestName">Nombre Completo</label>
+                        </div>
+                        <div class="mb-2 form-floating">
+                            <input type="email" id="guestEmail" name="guest[email]" class="form-control" required placeholder="Correo Electrónico">
+                            <label for="guestEmail">Correo Electrónico</label>
+                        </div>
+                        <div class="mb-2 form-floating">
+                            <input type="text" id="guestPhone" name="guest[phone]" class="form-control" required placeholder="Teléfono">
+                            <label for="guestPhone">Teléfono</label>
+                        </div>
 
-            <h4>Ubicación</h4>
-            @php
-                $location = $property['publicDescription']['neighborhood'] ?? 'No disponible';
-                $locationShort = Str::limit($location, 200);
-            @endphp
-            <p class="text-content" id="location">
-                <span class="short-text">{{ $locationShort }}</span>
-                <span class="d-none full-text">{{ $location }}</span>
-                @if(strlen($location) > 200)
-                    <a href="#" class="text-primary see-more" data-target="location">Ver más</a>
-                @endif
-            </p>
+                        <!-- 📜 Política de Reserva -->
+                        <h5 class="mt-3 mb-2">Política de Reserva</h5>
+                        <div class="mb-2">
+                            <select id="policyId" name="policy[policyId]" class="form-select" required>
+                                <option value="flexible">Flexible</option>
+                                <option value="moderate">Moderada</option>
+                                <option value="strict">Estricta</option>
+                            </select>
+                        </div>
 
-            <h4>Reglas de la Casa</h4>
-            @php
-                $houseRules = $property['publicDescription']['houseRules'] ?? 'No disponible';
-                $houseRulesShort = Str::limit($houseRules, 200);
-            @endphp
-            <p class="text-content" id="houseRules">
-                <span class="short-text">{{ $houseRulesShort }}</span>
-                <span class="d-none full-text">{{ $houseRules }}</span>
-                @if(strlen($houseRules) > 200)
-                    <a href="#" class="text-primary see-more" data-target="houseRules">Ver más</a>
-                @endif
-            </p>
-        </div>
-    </div>
-</div>
+                        <!-- 💳 Datos de Pago -->
+                        <h5 class="mt-3 mb-2">Datos de Pago</h5>
+                        <div class="mb-2">
+                            <select id="paymentMethod" name="payment[method]" class="form-select" required>
+                                <option value="credit_card">Tarjeta de Crédito</option>
+                                <option value="paypal">PayPal</option>
+                            </select>
+                        </div>
+                        <div class="mb-2 form-floating">
+                            <input type="text" id="paymentAmount" name="payment[amount]" class="form-control" readonly placeholder="Monto Total">
+                            <label for="paymentAmount">Monto Total</label>
+                        </div>
 
-<!-- Modal para ampliar imagen -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen"> <!-- Esto hace que el modal ocupe toda la pantalla -->
-        <div class="modal-content bg-transparent border-0"> <!-- Fondo transparente y sin bordes -->
-            <div class="modal-body d-flex justify-content-center align-items-center p-0">
-                <img id="modalImage" src="" class="img-fluid rounded zoomable">
+                        <!-- Botón de Reservar -->
+                        <button type="submit" id="reserveBtn" class="btn btn-primary w-100 mt-2" disabled>Reservar Ahora</button>
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Modal para todas las imágenes -->
+<div class="modal fade" id="imageModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Todas las imágenes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2">
+                    @if(isset($property['pictures']))
+                        @foreach($property['pictures'] as $picture)
+                            <div class="col-6">
+                                <img src="{{ $picture['original'] ?? asset('images/property-placeholder.jpg') }}" class="img-fluid rounded">
+                            </div>
+                        @endforeach
+                    @else
+                        <p>No hay imágenes disponibles.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section('styles')
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Manejar "Ver más" para expandir texto
-        document.querySelectorAll(".see-more").forEach(button => {
-            button.addEventListener("click", function (e) {
-                e.preventDefault();
-                let target = this.getAttribute("data-target");
-                let container = document.getElementById(target);
+    document.addEventListener('DOMContentLoaded', function() {
+    const bookedDates = @json($bookedDates);
+
+    // Elemento para mostrar desglose de precios
+    const priceBreakdown = document.createElement('div');
+    priceBreakdown.id = 'priceBreakdown';
+    priceBreakdown.className = 'mt-3 mb-2';
+    document.getElementById('paymentAmount').parentNode.after(priceBreakdown);
+    
+    // Agregar campo oculto para los datos de la reserva
+    const reservationDataInput = document.createElement('input');
+    reservationDataInput.type = 'hidden';
+    reservationDataInput.id = 'reservationData';
+    reservationDataInput.name = 'reservationData';
+    document.getElementById('reservationForm').appendChild(reservationDataInput);
+    
+    // Agregar campo oculto para el ID de la cotización
+    const quoteIdInput = document.createElement('input');
+    quoteIdInput.type = 'hidden';
+    quoteIdInput.id = 'quoteId';
+    quoteIdInput.name = 'quoteId';
+    document.getElementById('reservationForm').appendChild(quoteIdInput);
+
+    // Modificar el formulario para que redirija al portal de Guesty
+    const reservationForm = document.getElementById('reservationForm');
+    reservationForm.setAttribute('action', '{{ route("properties.redirect-to-portal") }}');
+    
+    // Modificar el comportamiento del botón de reserva
+    const reserveBtn = document.getElementById('reserveBtn');
+    reserveBtn.textContent = 'Continuar al Portal de Reserva';
+
+    flatpickr("#calendar", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        disable: bookedDates,
+        inline: true,
+        onChange: function(selectedDates) {
+            if (selectedDates.length === 2) {
+                const checkIn = selectedDates[0].toISOString().split('T')[0];
+                const checkOut = selectedDates[1].toISOString().split('T')[0];
                 
-                let shortText = container.querySelector(".short-text");
-                let fullText = container.querySelector(".full-text");
-
-                if (fullText.classList.contains("d-none")) {
-                    fullText.classList.remove("d-none");
-                    shortText.classList.add("d-none");
-                    this.textContent = "Ver menos";
-                } else {
-                    fullText.classList.add("d-none");
-                    shortText.classList.remove("d-none");
-                    this.textContent = "Ver más";
-                }
-            });
-        });
-
-        // Capturar imágenes del carrusel para abrir en modal
-        document.querySelectorAll(".carousel-img").forEach(img => {
-            img.addEventListener("click", function () {
-                document.getElementById("modalImage").src = this.getAttribute("data-bs-img");
-            });
-        });
+                document.getElementById("checkIn").value = checkIn;
+                document.getElementById("checkOut").value = checkOut;
+                
+                // Obtener número de huéspedes
+                const guestsCount = 2; // Puedes cambiar esto para obtenerlo de un selector si tienes uno
+                
+                // Usar el token CSRF del formulario en lugar de buscar la meta tag
+                const csrfToken = document.querySelector('input[name="_token"]').value;
+                
+                // Mostrar indicador de carga
+                priceBreakdown.innerHTML = `
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Calculando...</span>
+                        </div>
+                        <p class="mt-2">Calculando precio...</p>
+                    </div>
+                `;
+                
+                // Deshabilitar botón mientras se calcula
+                reserveBtn.disabled = true;
+                
+                // Realizar petición AJAX para obtener la cotización
+                fetch('{{ route('properties.calculatePrice') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        listingId: '{{ $property["_id"] }}',
+                        checkIn: checkIn,
+                        checkOut: checkOut,
+                        guestsCount: guestsCount
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error en la respuesta:', data.error);
+                        throw new Error(data.error);
+                    }
+                    
+                    // Guardar datos completos en campo oculto
+                    document.getElementById('reservationData').value = JSON.stringify(data);
+                    
+                    // Guardar ID de cotización si existe
+                    if (data.quoteId) {
+                        document.getElementById('quoteId').value = data.quoteId;
+                        console.log('ID de cotización guardado:', data.quoteId);
+                        
+                        // Intentar acceder a los datos de dinero desde la estructura anidada
+                        if (data.money) {
+                            // Asegurarse de que tenemos los datos necesarios
+                            const fareAccommodation = data.money.fareAccommodation || 0;
+                            const fareCleaning = data.money.fareCleaning || 0;
+                            const subTotalPrice = data.money.subTotalPrice || (fareAccommodation + fareCleaning);
+                            const currency = data.money.currency || 'USD';
+                            
+                            // Actualizar el campo de monto total
+                            document.getElementById('paymentAmount').value = `$${subTotalPrice} ${currency}`;
+                            
+                            // Mostrar el desglose de precios
+                            priceBreakdown.innerHTML = `
+                                <div class="card p-3 mb-3">
+                                    <h5 class="mb-3">Detalles de precio</h5>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Alojamiento:</span>
+                                        <span>$${fareAccommodation} ${currency}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Limpieza:</span>
+                                        <span>$${fareCleaning} ${currency}</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total:</span>
+                                        <span>$${subTotalPrice} ${currency}</span>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Habilitar el botón de reserva y actualizar texto
+                            reserveBtn.disabled = false;
+                            reserveBtn.textContent = 'Continuar al Portal de Reserva';
+                            
+                            // También podemos simplificar el formulario ya que los datos se ingresarán en el portal
+                            // Opcionalmente, ocultar los campos de datos del huésped
+                            // document.querySelectorAll('.form-floating').forEach(el => el.style.display = 'none');
+                            // document.querySelectorAll('h5').forEach(el => el.style.display = 'none');
+                            // document.querySelector('#policyId').parentNode.style.display = 'none';
+                            // document.querySelector('#paymentMethod').parentNode.style.display = 'none';
+                            
+                        } else {
+                            console.error('No se encontraron datos de precio en la respuesta');
+                        }
+                    } else {
+                        throw new Error('No se recibió un ID de cotización');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener la cotización:', error);
+                    priceBreakdown.innerHTML = `
+                        <div class="alert alert-danger">
+                            No se pudo calcular el precio. Por favor, intente nuevamente.
+                            <p class="small mb-0 mt-1">${error.message || 'Error de conexión'}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
     });
+});
 </script>
-
-<style>
-    /* Ajuste de imágenes */
-    .carousel-img {
-        height: 400px;
-        object-fit: cover;
-        cursor: pointer;
-    }
-
-    /* Diseño de Ver Más */
-    .see-more {
-        cursor: pointer;
-        font-weight: bold;
-    }
-</style>
 @endsection
