@@ -20,12 +20,8 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('properties.index') ? 'active' : '' }}" href="{{ route('properties.index') }}">Propiedades</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('services') ? 'active' : '' }}" href="{{ route('services') }}">Experiencias</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('for-owners') ? 'active' : '' }}" href="{{ route('for-owners') }}">Propietarios</a>
-                </li>
+            
+           
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">Nosotros</a>
                 </li>
@@ -35,15 +31,16 @@
             </ul>
             
             <!-- Redes sociales -->
-            <div class="ms-lg-4 d-flex social-links">
-                <a href="https://instagram.com/hostella" target="_blank" class="mx-2 text-dark">
+            <div class="hostella-social-nav ms-lg-4 d-flex align-items-center">
+                <a href="https://instagram.com/hostella" target="_blank" class="hostella-social-icon instagram" aria-label="Instagram">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://facebook.com/hostella" target="_blank" class="mx-2 text-dark">
-                    <i class="fab fa-facebook"></i>
+                <a href="https://facebook.com/hostella" target="_blank" class="hostella-social-icon facebook" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://wa.me/1234567890" target="_blank" class="ms-2 btn btn-success btn-sm">
-                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                <a href="https://wa.me/1234567890" target="_blank" class="hostella-whatsapp-btn" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
                 </a>
             </div>
         </div>

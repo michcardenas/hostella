@@ -119,160 +119,143 @@
     </section>
 
     <!-- Why Choose Us -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row mb-5 text-center">
-                <div class="col-lg-8 mx-auto">
-                    <h2 class="fw-bold">¿Por qué elegir Hostella?</h2>
-                    <p class="text-muted">Nos especializamos en brindar experiencias únicas y memorables</p>
+    <section class="py-5" style="background-color: #f8f9fa; background-image: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold" style="color: #1c2d41;">Maximiza el potencial de tu propiedad con Hostella</h2>
+                <p class="text-muted">¿Por qué elegir Hostella?</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="benefit-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-white rounded-circle mb-4">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">Rentabilidad Máxima</h4>
+                        <p class="text-muted">Optimizamos cada propiedad con tecnología para maximizar tu rentabilidad y ocupación.</p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-4">
-                                <i class="fas fa-gem"></i>
-                            </div>
-                            <h4>Propiedades de Lujo</h4>
-                            <p class="text-muted">Seleccionamos cuidadosamente cada propiedad para garantizar los más altos estándares de calidad y confort.</p>
+
+            <div class="col-lg-4">
+                <div class="benefit-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-white rounded-circle mb-4">
+                            <i class="fas fa-cogs fa-2x"></i>
                         </div>
+                        <h4 class="card-title">Automatización Inteligente</h4>
+                        <p class="text-muted">Automatizamos procesos clave para ahorrar tiempo, optimizar operaciones y aumentar la eficiencia.</p>
                     </div>
                 </div>
-                
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-4">
-                                <i class="fas fa-concierge-bell"></i>
-                            </div>
-                            <h4>Servicio Premium</h4>
-                            <p class="text-muted">Atención personalizada las 24 horas para asegurar que tu estancia sea perfecta en cada detalle.</p>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="benefit-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-white rounded-circle mb-4">
+                            <i class="fas fa-concierge-bell fa-2x"></i>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-4">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <h4>Experiencias Únicas</h4>
-                            <p class="text-muted">Creamos momentos inolvidables con servicios adicionales y experiencias personalizadas.</p>
-                        </div>
+                        <h4 class="card-title">Experiencias Memorables</h4>
+                        <p class="text-muted">Brindamos servicios exclusivos para ofrecer momentos inolvidables a tus huéspedes.</p>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Testimonials -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row mb-5 text-center">
-                <div class="col-lg-8 mx-auto">
-                    <h2 class="fw-bold">Lo que dicen nuestros clientes</h2>
-                    <p class="text-muted">Opiniones de huéspedes que han disfrutado de nuestras propiedades</p>
+        <div class="row text-center mt-5">
+            <div class="col-lg-12">
+                <button class="animated-button">
+                    <span>Explorar más</span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Por qué los propietarios confían en Hostella-->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold">¿Por qué los propietarios confían en Hostella?</h2>
+                <p class="text-muted">Valores que hacen la diferencia en la gestión de tu propiedad.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon rounded-circle text-white mb-4">
+                        <i class="fas fa-laptop-house fa-2x"></i>
+                    </div>
+                    <h5 class="feature-title">Innovación Digital</h5>
+                    <p class="feature-text">Tecnología avanzada para optimizar ingresos, tarifas dinámicas y análisis de mercado en tiempo real.</p>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-4">
-                                <div class="testimonial-stars text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                            <p class="testimonial-text">"Una experiencia increíble. La villa era exactamente como en las fotos, incluso mejor. El servicio fue excepcional y la ubicación perfecta."</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <div class="testimonial-img me-3">
-                                    <img src="{{ asset('images/testimonial-1.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
-                                </div>
-                                <div>
-                                    <h5 class="mb-0">María García</h5>
-                                    <p class="text-muted mb-0">Madrid, España</p>
-                                </div>
-                            </div>
-                        </div>
+
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon rounded-circle text-white mb-4">
+                        <i class="fas fa-file-invoice-dollar fa-2x"></i>
                     </div>
+                    <h5 class="feature-title">Transparencia Total</h5>
+                    <p class="feature-text">Reportes financieros claros, detallados y asesoría constante para mantenerte informado.</p>
                 </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-4">
-                                <div class="testimonial-stars text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                            <p class="testimonial-text">"Hostella superó todas nuestras expectativas. La atención a los detalles fue impresionante y las instalaciones de primera categoría. Volveremos seguro."</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <div class="testimonial-img me-3">
-                                    <img src="{{ asset('images/testimonial-2.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
-                                </div>
-                                <div>
-                                    <h5 class="mb-0">John Smith</h5>
-                                    <p class="text-muted mb-0">New York, USA</p>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon rounded-circle text-white mb-4">
+                        <i class="fas fa-tasks fa-2x"></i>
                     </div>
+                    <h5 class="feature-title">Gestión Integral</h5>
+                    <p class="feature-text">Administramos todo, desde optimización inicial hasta operaciones diarias, liberando tu tiempo.</p>
                 </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="d-flex mb-4">
-                                <div class="testimonial-stars text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                            <p class="testimonial-text">"Nuestras vacaciones familiares fueron perfectas gracias a Hostella. La villa tenía todo lo que necesitábamos y el servicio al cliente fue excepcional."</p>
-                            <div class="d-flex align-items-center mt-4">
-                                <div class="testimonial-img me-3">
-                                    <img src="{{ asset('images/testimonial-3.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
-                                </div>
-                                <div>
-                                    <h5 class="mb-0">Laura Martínez</h5>
-                                    <p class="text-muted mb-0">Buenos Aires, Argentina</p>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon rounded-circle text-white mb-4">
+                        <i class="fas fa-seedling fa-2x"></i>
                     </div>
+                    <h5 class="feature-title">Crecimiento Sostenible</h5>
+                    <p class="feature-text">Creamos estrategias que aseguran un crecimiento constante y sostenible para tu propiedad.</p>
                 </div>
             </div>
         </div>
-    </section>
 
+        <div class="row text-center mt-5">
+            <div class="col-lg-12">
+                <button class="animated-button">
+                    <span>Explorar más</span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- CTA Section -->
-    <section class="py-5 bg-primary text-white">
-        <div class="container py-4">
-            <div class="row align-items-center">
-                <div class="col-lg-8 mb-4 mb-lg-0">
-                    <h2 class="fw-bold">¿Listo para vivir una experiencia inolvidable?</h2>
-                    <p class="lead mb-0">Explora nuestras propiedades exclusivas y reserva ahora.</p>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a href="{{ route('properties.index') }}" class="btn btn-light btn-lg">Encontrar mi villa</a>
-                </div>
+    <section class="py-5 text-white" style="background-color: #2c3e50; background-image: linear-gradient(135deg, #2c3e50 0%, #1a2a43 100%);">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="fw-bold">Tu próxima experiencia exclusiva comienza aquí</h2>
+                <p class="lead mb-0">Descubre villas y propiedades únicas seleccionadas especialmente para ti.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <button class="button-explore">
+                    <span>Explorar Propiedades</span>
+                </button>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 @endsection
 
