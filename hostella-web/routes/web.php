@@ -45,7 +45,9 @@ Route::get('/booking/confirmation', [BookingController::class, 'confirmation'])-
 Route::get('/book/{propertyId}', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/book/{propertyId}', [ReservationController::class, 'store'])->name('reservations.store');
 
-// Ruta de prueba para Guesty API
+// about
+Route::get('/nosotros', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
+
 // Rutas de prueba para Guesty API
 Route::prefix('guesty-test')->group(function () {
     Route::get('/base-urls', [App\Http\Controllers\GuestyTestController::class, 'testBaseUrl']);
@@ -58,3 +60,8 @@ Route::prefix('token-test')->group(function () {
     Route::get('/status', [App\Http\Controllers\TokenTestController::class, 'testTokenSystem']);
     Route::get('/refresh', [App\Http\Controllers\TokenTestController::class, 'manualRefreshToken']);
 });
+
+
+Route::post('/properties/{id}/confirm-reservation', [PropertiesController::class, 'confirmReservation'])->name('properties.confirm-reservation');
+Route::post('/properties/process-reservation', [PropertiesController::class, 'processReservation'])->name('properties.process-reservation');
+Route::get('/properties/redirect-to-portal', [PropertiesController::class, 'redirectToPortal'])->name('properties.redirect-to-portal');

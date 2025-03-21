@@ -82,51 +82,32 @@
             <div class="sticky-form">
                 <div class="calendar-container text-center">
                     <div id="calendar"></div>
-                    <form id="reservationForm" action="{{ route('properties.reserve', $property['_id']) }}" method="POST" class="mt-3">
+                    <form id="reservationForm" action="{{ route('properties.confirm-reservation', $property['_id']) }}" method="POST" class="mt-3">
                         @csrf
                         <input type="hidden" id="checkIn" name="checkIn">
                         <input type="hidden" id="checkOut" name="checkOut">
-
-                        <!-- 🏠 Datos del Huésped -->
-                        <h5 class="mb-2">Datos del Huésped</h5>
-                        <div class="mb-2 form-floating">
-                            <input type="text" id="guestName" name="guest[name]" class="form-control" required placeholder="Nombre Completo">
-                            <label for="guestName">Nombre Completo</label>
-                        </div>
-                        <div class="mb-2 form-floating">
-                            <input type="email" id="guestEmail" name="guest[email]" class="form-control" required placeholder="Correo Electrónico">
-                            <label for="guestEmail">Correo Electrónico</label>
-                        </div>
-                        <div class="mb-2 form-floating">
-                            <input type="text" id="guestPhone" name="guest[phone]" class="form-control" required placeholder="Teléfono">
-                            <label for="guestPhone">Teléfono</label>
-                        </div>
-
-                        <!-- 📜 Política de Reserva -->
-                        <h5 class="mt-3 mb-2">Política de Reserva</h5>
-                        <div class="mb-2">
-                            <select id="policyId" name="policy[policyId]" class="form-select" required>
-                                <option value="flexible">Flexible</option>
-                                <option value="moderate">Moderada</option>
-                                <option value="strict">Estricta</option>
+                        <input type="hidden" id="reservationData" name="reservationData">
+                        <input type="hidden" id="quoteId" name="quoteId">
+                        
+                        <!-- Número de huéspedes -->
+                        <div class="mb-3">
+                            <label for="guestsCount" class="form-label">Número de huéspedes</label>
+                            <select id="guestsCount" name="guestsCount" class="form-select" required>
+                                @for ($i = 1; $i <= $property['accommodates']; $i++)
+                                    <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'huésped' : 'huéspedes' }}</option>
+                                @endfor
                             </select>
                         </div>
-
-                        <!-- 💳 Datos de Pago -->
-                        <h5 class="mt-3 mb-2">Datos de Pago</h5>
-                        <div class="mb-2">
-                            <select id="paymentMethod" name="payment[method]" class="form-select" required>
-                                <option value="credit_card">Tarjeta de Crédito</option>
-                                <option value="paypal">PayPal</option>
-                            </select>
-                        </div>
+                        
                         <div class="mb-2 form-floating">
                             <input type="text" id="paymentAmount" name="payment[amount]" class="form-control" readonly placeholder="Monto Total">
                             <label for="paymentAmount">Monto Total</label>
                         </div>
-
-                        <!-- Botón de Reservar -->
-                        <button type="submit" id="reserveBtn" class="btn btn-primary w-100 mt-2" disabled>Reservar Ahora</button>
+                        
+                        <div id="priceBreakdown" class="mt-3 mb-2"></div>
+                        
+                        <!-- Botón de Continuar -->
+                        <button type="submit" id="reserveBtn" class="btn btn-primary w-100 mt-2" disabled>Continuar con la Reserva</button>
                     </form>
 
                 </div>
@@ -168,37 +149,20 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
     const bookedDates = @json($bookedDates);
 
-    // Elemento para mostrar desglose de precios
-    const priceBreakdown = document.createElement('div');
-    priceBreakdown.id = 'priceBreakdown';
-    priceBreakdown.className = 'mt-3 mb-2';
-    document.getElementById('paymentAmount').parentNode.after(priceBreakdown);
+    // Elemento para mostrar desglose de precios (ya creado en el HTML)
+    const priceBreakdown = document.getElementById('priceBreakdown');
     
-    // Agregar campo oculto para los datos de la reserva
-    const reservationDataInput = document.createElement('input');
-    reservationDataInput.type = 'hidden';
-    reservationDataInput.id = 'reservationData';
-    reservationDataInput.name = 'reservationData';
-    document.getElementById('reservationForm').appendChild(reservationDataInput);
+    // Selector de número de huéspedes
+    const guestsCountSelect = document.getElementById('guestsCount');
     
-    // Agregar campo oculto para el ID de la cotización
-    const quoteIdInput = document.createElement('input');
-    quoteIdInput.type = 'hidden';
-    quoteIdInput.id = 'quoteId';
-    quoteIdInput.name = 'quoteId';
-    document.getElementById('reservationForm').appendChild(quoteIdInput);
-
-    // Modificar el formulario para que redirija al portal de Guesty
-    const reservationForm = document.getElementById('reservationForm');
-    reservationForm.setAttribute('action', '{{ route("properties.redirect-to-portal") }}');
-    
-    // Modificar el comportamiento del botón de reserva
+    // Referencia al botón de reserva
     const reserveBtn = document.getElementById('reserveBtn');
-    reserveBtn.textContent = 'Continuar al Portal de Reserva';
+    reserveBtn.textContent = 'Continuar con la Reserva';
 
+    // Inicializar Flatpickr para el calendario
     flatpickr("#calendar", {
         mode: "range",
         dateFormat: "Y-m-d",
@@ -213,10 +177,10 @@
                 document.getElementById("checkIn").value = checkIn;
                 document.getElementById("checkOut").value = checkOut;
                 
-                // Obtener número de huéspedes
-                const guestsCount = 2; // Puedes cambiar esto para obtenerlo de un selector si tienes uno
+                // Obtener número de huéspedes del selector
+                const guestsCount = guestsCountSelect.value;
                 
-                // Usar el token CSRF del formulario en lugar de buscar la meta tag
+                // Usar el token CSRF del formulario
                 const csrfToken = document.querySelector('input[name="_token"]').value;
                 
                 // Mostrar indicador de carga
@@ -264,7 +228,6 @@
                     // Guardar ID de cotización si existe
                     if (data.quoteId) {
                         document.getElementById('quoteId').value = data.quoteId;
-                        console.log('ID de cotización guardado:', data.quoteId);
                         
                         // Intentar acceder a los datos de dinero desde la estructura anidada
                         if (data.money) {
@@ -297,17 +260,8 @@
                                 </div>
                             `;
                             
-                            // Habilitar el botón de reserva y actualizar texto
+                            // Habilitar el botón de reserva
                             reserveBtn.disabled = false;
-                            reserveBtn.textContent = 'Continuar al Portal de Reserva';
-                            
-                            // También podemos simplificar el formulario ya que los datos se ingresarán en el portal
-                            // Opcionalmente, ocultar los campos de datos del huésped
-                            // document.querySelectorAll('.form-floating').forEach(el => el.style.display = 'none');
-                            // document.querySelectorAll('h5').forEach(el => el.style.display = 'none');
-                            // document.querySelector('#policyId').parentNode.style.display = 'none';
-                            // document.querySelector('#paymentMethod').parentNode.style.display = 'none';
-                            
                         } else {
                             console.error('No se encontraron datos de precio en la respuesta');
                         }
@@ -325,6 +279,18 @@
                     `;
                 });
             }
+        }
+    });
+    
+    // Actualizar precio cuando cambia el número de huéspedes
+    guestsCountSelect.addEventListener('change', function() {
+        const checkInValue = document.getElementById("checkIn").value;
+        const checkOutValue = document.getElementById("checkOut").value;
+        
+        if (checkInValue && checkOutValue) {
+            // Simular un cambio en las fechas para recalcular
+            const dates = flatpickr.instances[0].selectedDates;
+            flatpickr.instances[0].onChange(dates, '', flatpickr.instances[0]);
         }
     });
 });

@@ -728,6 +728,68 @@ body {
     font-size: 0.9rem;
     color: var(--hostella-gray);
 }
+
+
+
+/* properties */
+
+
+.property-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Estilos modernos para el banner de Hostella */
+
+.hostella-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 100%);
+    z-index: 1;
+}
+
+.hostella-hero-content {
+    position: relative;
+    z-index: 2;
+    padding-top: 120px;
+    color: #fff;
+}
+
+.hostella-main-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 1s ease-out;
+}
+
+.hostella-subtitle {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.hostella-description {
+    font-size: 1.3rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    animation: fadeInUp 1.4s ease-out;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 576px) {
     .hostella-social-icon {
         width: 32px;
@@ -738,10 +800,50 @@ body {
         padding: 5px 10px;
         font-size: 0.8rem;
     }
+    .hostella-hero-banner {
+        height: 350px;
+    }
+    
+    .hostella-hero-content {
+        padding-top: 60px;
+    }
+    
+    .hostella-main-title {
+        font-size: 1.8rem;
+    }
+    
+    .hostella-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hostella-description {
+        font-size: 1rem;
+    }
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+    .hostella-hero-banner {
+        height: 400px;
+    }
+    
+    .hostella-hero-content {
+        padding-top: 80px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .hostella-main-title {
+        font-size: 2.2rem;
+    }
+    
+    .hostella-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .hostella-description {
+        font-size: 1.1rem;
+    }
     .footer-heading::after {
         left: 50%;
         transform: translateX(-50%);

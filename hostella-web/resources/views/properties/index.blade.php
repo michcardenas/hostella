@@ -3,6 +3,22 @@
 @section('title', 'Propiedades - Hostella')
 
 @section('content')
+<!-- Banner hero moderno para Hostella -->
+<div class="hostella-hero-banner">
+    <div class="hostella-overlay"></div>
+    <div class="hostella-hero-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10">
+                    <h1 class="hostella-main-title">Relájate en tu próxima aventura</h1>
+                    <h2 class="hostella-subtitle">Propiedades exclusivas para momentos únicos</h2>
+                    <h3 class="hostella-description">Descubre alojamientos excepcionales verificados por Hostella</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container mt-5">
     <h1 class="fw-bold text-center mb-4">Lista de Propiedades</h1>
 
@@ -43,9 +59,18 @@
 
 <!-- Estilos personalizados -->
 <style>
-    .property-img {
-        height: 200px;
-        object-fit: cover;
-    }
+  
+    
+
+  .hostella-hero-banner {
+    position: relative;
+    height: 500px;
+    background-image: url('{{ asset("images/relax.webp") }}');
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
 </style>
 @endsection

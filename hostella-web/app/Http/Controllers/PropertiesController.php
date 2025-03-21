@@ -294,4 +294,103 @@ public function reserve(Request $request, $id)
     }
 }
 
+public function confirmReservation(Request $request, $id)
+{
+    // Validar datos de entrada
+    $validated = $request->validate([
+        'checkIn' => 'required|date',
+        'checkOut' => 'required|date|after:checkIn',
+        'guestsCount' => 'required|integer|min:1',
+        'quoteId' => 'required|string',
+        'reservationData' => 'required|string',
+    ]);
+    
+    try {
+        // Obtener información de la propiedad
+        $property = $this->guestyService->getListing($id);
+        
+        if (!$property) {
+            return redirect()->route('properties.index')
+                ->with('error', 'Propiedad no encontrada.');
+        }
+        
+        // Decodificar los datos de la reserva
+        $quoteData = json_decode($validated['reservationData'], true);
+        
+        // Renderizar vista de confirmación con datos
+        return view('properties.confirm-reservation', [
+            'property' => $property,
+            'checkIn' => $validated['checkIn'],
+            'checkOut' => $validated['checkOut'],
+            'guestsCount' => $validated['guestsCount'],
+            'quoteId' => $validated['quoteId'],
+            'quoteData' => $quoteData,
+        ]);
+    } catch (\Exception $e) {
+        return redirect()->route('properties.show', $id)
+            ->with('error', 'Error al cargar los datos de reserva: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Procesa la información del huésped y la reserva.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function processReservation(Request $request)
+{
+    // Validar datos del formulario
+    $validated = $request->validate([
+        'listingId' => 'required|string',
+        'checkIn' => 'required|date',
+        'checkOut' => 'required|date|after:checkIn',
+        'guestsCount' => 'required|integer|min:1',
+        'quoteId' => 'required|string',
+        'totalPrice' => 'required|numeric',
+        'currency' => 'required|string',
+        'guestName' => 'required|string|max:255',
+        'guestEmail' => 'required|email|max:255',
+        'guestPhone' => 'nullable|string|max:20',
+    ]);
+    
+    try {
+        // Aquí puedes integrar con el API de Guesty para crear una reserva
+        // o redirigir al usuario al portal de pago de Guesty
+        
+        // Ejemplo: Preparar datos para enviar a Guesty
+        $reservationData = [
+            'listingId' => $validated['listingId'],
+            'checkInDateLocalized' => $validated['checkIn'],
+            'checkOutDateLocalized' => $validated['checkOut'],
+            'guestsCount' => $validated['guestsCount'],
+            'quoteId' => $validated['quoteId'],
+            'guest' => [
+                'fullName' => $validated['guestName'],
+                'email' => $validated['guestEmail'],
+                'phone' => $validated['guestPhone'] ?? '',
+            ],
+            // Otros datos necesarios según el API de Guesty
+        ];
+        
+        // Aquí realizarías la llamada al API de Guesty para crear la reserva
+        // o generarías un enlace de pago
+        // $reservation = $this->guestyService->createReservation($reservationData);
+        
+        // Por ahora, redireccionamos al portal de Guesty
+        return redirect()->route('properties.redirect-to-portal', [
+            'listingId' => $validated['listingId'],
+            'quoteId' => $validated['quoteId'],
+            'guest' => json_encode([
+                'fullName' => $validated['guestName'],
+                'email' => $validated['guestEmail'],
+                'phone' => $validated['guestPhone'] ?? '',
+            ])
+        ]);
+    } catch (\Exception $e) {
+        return back()->withInput()
+            ->with('error', 'Error al procesar la reserva: ' . $e->getMessage());
+    }
+}
+
 }
