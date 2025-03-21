@@ -5,7 +5,7 @@
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <div class="footer-branding">
                     <div class="logo-container">
-                        <img src="{{ asset('images/Hostella_Avatar.png') }}" alt="Hostella" class="footer-logo">
+                        <img src="{{ asset('images/Hostella_Logo_horizontal_Blanco_.png') }}" alt="Hostella" class="footer-logo">
                     </div>
                     <p class="footer-description">Descubre las más exclusivas villas y propiedades de lujo con Hostella, tu socio confiable para experiencias inolvidables.</p>
                 </div>

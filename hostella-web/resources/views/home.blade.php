@@ -8,41 +8,34 @@
     <!-- Hero Section -->
     @if(count($featuredImages) > 0)
     <div class="carousel-container position-relative">
-        <!-- Carrusel -->
-        <div id="carouselProperties" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                @foreach($featuredImages as $index => $image)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <img src="{{ $image }}" class="d-block w-100 carousel-image" alt="Propiedad">
-                    </div>
-                @endforeach
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProperties" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselProperties" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
+    <!-- Carrusel -->
+    <div id="carouselProperties" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @foreach($featuredImages as $index => $image)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <img src="{{ $image }}" class="d-block w-100 carousel-image" alt="Propiedad">
+                </div>
+            @endforeach
         </div>
-
-        <!-- Contenido superpuesto -->
-        <div class="carousel-overlay text-center">
-            <h1 class="display-4 fw-bold text-white">Descubre Propiedades Exclusivas</h1>
-            <h2 class="lead text-white">Explora villas y alojamientos de lujo en los mejores destinos</h2>
-            <a href="{{ route('properties.index') }}" class="btn  btn-primary mt-3">Ver Propiedades</a>
-            </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselProperties" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselProperties" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
     </div>
-@else
-    <p class="text-center text-danger">No se encontraron imágenes de propiedades.</p>
-@endif
 
+    <!-- Contenido superpuesto -->
+    <div class="carousel-overlay text-center">
+        <h1 class="display-4 fw-bold text-white">Descubre Propiedades Exclusivas</h1>
+        <h2 class="lead text-white">Explora villas y alojamientos de lujo en los mejores destinos</h2>
+        <!-- <a href="{{ route('properties.index') }}" class="btn btn-primary mt-3">Ver Propiedades</a> -->
 
-    <!-- Search Section -->
-    <section class="py-5 bg-light">
+        <div class="search-box-overlay">
         <div class="container">
-            <div class="search-box p-4 bg-white shadow rounded">
+            <div class="search-box p-4  shadow rounded">
                 <form action="{{ route('properties.index') }}" method="GET">
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -69,7 +62,19 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
+</div>
+
+    <!-- Caja de búsqueda superpuesta -->
+
+</div>
+
+@else
+    <p class="text-center text-danger">No se encontraron imágenes de propiedades.</p>
+@endif
+
+
+    
 
     <!-- Featured Properties -->
     <section class="py-5">
@@ -166,16 +171,58 @@
             </div>
         </div>
 
-        <div class="row text-center mt-5">
+        <!-- <div class="row text-center mt-5">
             <div class="col-lg-12">
                 <button class="animated-button">
                     <span>Explorar más</span>
                     <span></span>
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 </section>
+
+
+
+<!-- Sección de Propiedad Destacada -->
+@if(count($featuredProperties) > 0)
+    @php
+        $property = $featuredProperties[0]; // Primera propiedad destacada
+    @endphp
+
+    <section class="featured-property py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Columna de texto -->
+                <div class="col-md-6 text-section">
+                    <p class="text-muted">{{ $property['description'] ?? 'El lugar favorito, según nuestros huéspedes.' }}</p>
+                    <div class="stars">
+                        @php
+                            $rating = $property['rating'] ?? 5; // Usa la calificación si está disponible
+                        @endphp
+                        @for ($i = 0; $i < $rating; $i++)
+                            ★
+                        @endfor
+                    </div>
+                    <h2 class="property-title">{{ $property['title'] ?? 'Propiedad Destacada' }}</h2>
+                    <a href="{{ route('properties.show', $property['_id']) }}" class="btn btn-primary">Ver disponibilidad</a>
+                </div>
+
+                <!-- Columna de imágenes -->
+                <div class="col-md-6 images-section">
+                    <div class="image-wrapper">
+                        <img src="{{ $featuredImages[0] ?? asset('images/property-placeholder.jpg') }}" 
+                             class="small-image" alt="Interior">
+                        <img src="{{ $featuredImages[1] ?? asset('images/property-placeholder.jpg') }}" 
+                             class="large-image" alt="Piscina">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endif
+
+
 
 
     <!-- Por qué los propietarios confían en Hostella-->
@@ -241,7 +288,7 @@
     </div>
 </section>
     <!-- CTA Section -->
-    <section class="py-5 text-white" style="background-color: #2c3e50; background-image: linear-gradient(135deg, #2c3e50 0%, #1a2a43 100%);">
+    <!-- <section class="py-5 text-white" style="background-color: #2c3e50; background-image: linear-gradient(135deg, #2c3e50 0%, #1a2a43 100%);">
     <div class="container py-4">
         <div class="row align-items-center">
             <div class="col-lg-8 mb-4 mb-lg-0">
@@ -255,7 +302,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 @endsection
 

@@ -185,9 +185,10 @@ a {
 
 /* Search Box */
 .search-box {
-    margin-top: -50px;
-    position: relative;
-    z-index: 10;
+    background: rgba(255, 255, 255, 0.8); /* Blanco con 80% de opacidad */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Property Cards */
@@ -235,9 +236,12 @@ footer a:hover {
     transform: translate(-50%, -50%);
     width: 100%;
     text-align: center;
-    background: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.1); /* Fondo semi-transparente */
     padding: 30px;
     border-radius: 10px;
+}
+.search-box-overlay {
+margin:10px ;
 }
 
 /* 🔹 Ajustes para texto */
@@ -511,6 +515,9 @@ body {
 .bg-light {
     background-color: #f8f9fa;
 }
+.text-blue {
+    color: #000066;
+}
 
 /* Tarjetas de características */
 .feature-card {
@@ -586,15 +593,13 @@ body {
 /* Logo y marca */
 .logo-container {
     display: inline-block;
-    background-color: #ffffff;
-    border-radius: 50%;
+   
     padding: 5px;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
     margin-bottom: 15px;
 }
 
 .footer-logo {
-    height: 80px;
+    height: 50px;
     width: auto;
     display: block;
 }
@@ -779,6 +784,99 @@ body {
     max-width: 600px;
     animation: fadeInUp 1.4s ease-out;
 }
+
+
+.featured-property {
+    padding: 60px 0;
+}
+
+.text-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye uniformemente los elementos */
+    align-items: flex-start; /* Alinea el texto a la izquierda */
+    text-align: left; /* Evita el centrado del texto */
+    height: 100%; /* Ajusta la altura del contenedor */
+    gap: 10px; /* Espacio entre elementos */
+}
+.text-section p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.text-section .stars {
+    font-size: 18px;
+    color: #000066;
+    margin-bottom: 5px;
+}
+
+.property-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #000066; /* Azul oscuro */
+}
+
+.btn-primary {
+    background-color: #000066;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: auto; /* Envía el botón hacia abajo */
+}
+
+.images-section {
+    position: relative;
+    display: flex;
+    gap: 10px;
+}
+
+.image-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.small-image {
+    width: 190px;
+    height: 154px;
+    border-radius: 40px;
+    object-fit: cover;
+    position: absolute;
+    top: -40px;
+    left: -85px;
+    border: 5px solid white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.large-image {
+    width: 100%;
+    border-radius: 15px;
+    object-fit: cover;
+}
+.gallery-container {
+    position: relative; /* Permite que el botón se posicione dentro de este contenedor */
+}
+
+.view-images-btn {
+    position: absolute;
+    bottom: 15px; /* Ajusta la distancia desde la parte inferior */
+    right: 15px; /* Ajusta la distancia desde la parte derecha */
+    background-color: #000066; /* Azul como Hostella */
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+.view-images-btn:hover {
+    background-color: #003d82; /* Un azul más oscuro al pasar el mouse */
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;

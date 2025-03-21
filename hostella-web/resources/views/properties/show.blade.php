@@ -8,48 +8,64 @@
     <h1 class="fw-bold text-center">{{ $property['title'] ?? 'Sin título' }}</h1>
     <p class="text-muted text-center"><i class="fas fa-map-marker-alt"></i> {{ $property['address']['full'] ?? 'Ubicación no disponible' }}</p>
 
-    <!-- Galería de imágenes -->
-    <div class="row g-2">
-        @if(isset($property['pictures']) && count($property['pictures']) >= 4)
-            <div class="col-md-6">
-                <img src="{{ $property['pictures'][0]['original'] ?? asset('images/property-placeholder.jpg') }}" 
-                     class="img-fluid rounded w-100 h-100 object-fit-cover">
-            </div>
-            <div class="col-md-3">
-                <img src="{{ $property['pictures'][1]['original'] ?? asset('images/property-placeholder.jpg') }}" 
-                     class="img-fluid rounded w-100 mb-2 object-fit-cover">
-                <img src="{{ $property['pictures'][2]['original'] ?? asset('images/property-placeholder.jpg') }}" 
-                     class="img-fluid rounded w-100 object-fit-cover">
-            </div>
-            <div class="col-md-3">
-                <img src="{{ $property['pictures'][3]['original'] ?? asset('images/property-placeholder.jpg') }}" 
-                     class="img-fluid rounded w-100 h-100 object-fit-cover">
-            </div>
-        @else
-            <div class="col-12">
-                <img src="{{ asset('images/property-placeholder.jpg') }}" class="img-fluid rounded w-100">
-            </div>
-        @endif
+    <!-- Contenedor de la galería con posición relativa -->
+    <div class="gallery-container position-relative">
+        <div class="row g-2">
+            @if(isset($property['pictures']) && count($property['pictures']) >= 4)
+                <div class="col-md-6">
+                    <img src="{{ $property['pictures'][0]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                         class="img-fluid rounded w-100 h-100 object-fit-cover">
+                </div>
+                <div class="col-md-3">
+                    <img src="{{ $property['pictures'][1]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                         class="img-fluid rounded w-100 mb-2 object-fit-cover">
+                    <img src="{{ $property['pictures'][2]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                         class="img-fluid rounded w-100 object-fit-cover">
+                </div>
+                <div class="col-md-3">
+                    <img src="{{ $property['pictures'][3]['original'] ?? asset('images/property-placeholder.jpg') }}" 
+                         class="img-fluid rounded w-100 h-100 object-fit-cover">
+                </div>
+            @else
+                <div class="col-12">
+                    <img src="{{ asset('images/property-placeholder.jpg') }}" class="img-fluid rounded w-100">
+                </div>
+            @endif
+        </div>
+
+        <!-- Botón encima de las imágenes (inferior derecha) -->
+        <button class="btn btn-primary view-images-btn" data-bs-toggle="modal" data-bs-target="#imageModal">
+            Ver todas las imágenes
+        </button>
     </div>
 
-    <div class="text-center mt-2">
-        <button class="btn btn-link text-decoration-none" data-bs-toggle="modal" data-bs-target="#imageModal">Ver todas las imágenes</button>
-    </div>
 
     <!-- Contenedor de información y formulario sticky -->
     <div class="row mt-4">
         <div class="col-md-7">
-            <div class="bg-light p-3 rounded mb-3">
-                <h3 class="fw-bold">${{ $property['prices']['basePrice'] ?? 'N/A' }} <small>/ noche</small></h3>
-                <p class="text-muted">Moneda: {{ $property['prices']['currency'] ?? 'USD' }}</p>
-            </div>
+        <div class="property-pricing bg-white p-3 rounded mb-3 shadow-sm">
+            <h3 class="fw-bold text-blue">${{ $property['prices']['basePrice'] ?? 'N/A' }} <small class="text-dark">/ noche</small></h3>
+            <p class="text-muted">Moneda: {{ $property['prices']['currency'] ?? 'USD' }}</p>
 
-            <ul class="list-unstyled">
-                <li><strong>Habitaciones:</strong> {{ $property['bedrooms'] }}</li>
-                <li><strong>Camas:</strong> {{ $property['beds'] }}</li>
-                <li><strong>Baños:</strong> {{ $property['bathrooms'] }}</li>
-                <li><strong>Capacidad máxima:</strong> {{ $property['accommodates'] }} huéspedes</li>
-            </ul>
+            <!-- Características de la propiedad -->
+            <div class="property-details bg-light p-3 rounded">
+                <div class="row">
+                    <div class="col-6 d-flex align-items-center">
+                        <i class="fas fa-bed text-blue me-2"></i> {{ $property['bedrooms'] ?? 'N/A' }} Habitaciones
+                    </div>
+                    <div class="col-6 d-flex align-items-center">
+                        <i class="fas fa-bath text-blue me-2"></i> {{ $property['bathrooms'] ?? 'N/A' }} Baños
+                    </div>
+                    <div class="col-6 d-flex align-items-center mt-2">
+                        <i class="fas fa-procedures text-blue me-2"></i> {{ $property['beds'] ?? 'N/A' }} Camas
+                    </div>
+                    <div class="col-6 d-flex align-items-center mt-2">
+                        <i class="fas fa-users text-blue me-2"></i> Capacidad máxima: {{ $property['accommodates'] ?? 'N/A' }} huéspedes
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
             <!-- Sección de detalles con "Ver más" -->
             @php
@@ -71,7 +87,7 @@
                     <span class="short-text">{{ $shortContent }}</span>
                     <span class="d-none full-text">{{ $content }}</span>
                     @if(strlen($content) > 200)
-                        <a href="#" class="text-primary see-more" data-target="{{ $key }}">Ver más</a>
+                        <a href="#" class="text-blue see-more" data-target="{{ $key }}">Ver más</a>
                     @endif
                 </p>
             @endforeach
@@ -186,7 +202,7 @@
                 // Mostrar indicador de carga
                 priceBreakdown.innerHTML = `
                     <div class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status">
+                        <div class="spinner-border text-blue" role="status">
                             <span class="visually-hidden">Calculando...</span>
                         </div>
                         <p class="mt-2">Calculando precio...</p>
