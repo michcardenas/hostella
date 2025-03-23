@@ -26,7 +26,13 @@ class GuestyService
     {
         return $this->makeRequest('GET', '/listings', $params);
     }
-
+    public function getListingReviews($listingId, $limit = 5)
+    {
+        return $this->makeRequest('GET', '/reviews', [
+            'listingId' => $listingId,
+            'limit' => $limit
+        ]);
+    }
     /**
      * Obtener una propiedad específica por ID
      */

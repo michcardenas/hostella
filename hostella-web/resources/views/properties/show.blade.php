@@ -66,32 +66,112 @@
             </div>
         </div>
 
+        @php
+    $sections = [
+        'summary' => 'Descripción',
+        'space' => 'Espacio',
+        'neighborhood' => 'Ubicación',
+        'houseRules' => 'Reglas de la Casa'
+    ];
+@endphp
 
             <!-- Sección de detalles con "Ver más" -->
             @php
-                $sections = [
-                    'summary' => 'Descripción',
-                    'space' => 'Espacio',
-                    'neighborhood' => 'Ubicación',
-                    'houseRules' => 'Reglas de la Casa'
-                ];
-            @endphp
-            
-            @foreach ($sections as $key => $title)
-                @php
-                    $content = $property['publicDescription'][$key] ?? 'No disponible';
-                    $shortContent = Str::limit($content, 200);
+    $description = $property['publicDescription']['summary'] ?? '';
+    $shortDescription = Str::limit($description, 250);
+@endphp
+
+@if(!empty($description))
+    <div class="mb-4 description-section">
+        <p class="description-text" style="line-height: 1.7;">
+            <span class="short-text">{{ $shortDescription }}</span>
+            <span class="full-text d-none">{{ $description }}</span>
+        </p>
+        @if(strlen($description) > 250)
+            <a href="#" class="text-blue fw-semibold see-more-link" data-target="description">Ver más &gt;&gt;</a>
+        @endif
+    </div>
+@endif
+@php
+    $space = $property['publicDescription']['space'] ?? '';
+@endphp
+
+@if(!empty($space))
+    <div class="mt-5">
+        <h4 class="fw-bold text-blue ">Espacio</h4>
+        <p style="line-height: 1.7;">{{ $space }}</p>
+        <hr>
+    </div>
+@endif
+@if(!empty($property['amenities']))
+    <div class="mt-5">
+        <h4 class="fw-bold text-blue">Qué encontrarás en este lugar</h4>
+        <div class="bg-light p-3 rounded mt-3">
+            <div class="row amenities-container">
+                @foreach ($property['amenities'] as $index => $amenity)
+                    <div class="col-md-6 mb-2 amenity-item {{ $index >= 6 ? 'd-none extra-amenity' : '' }}">
+                        <i class="fas fa-check-circle text-blue me-2" ></i>{{ $amenity }}
+                    </div>
+                @endforeach
+            </div>
+            @if(count($property['amenities']) > 6)
+                <a href="#" class="text-blue fw-semibold see-more-amenities d-block mt-2">Ver más &gt;&gt;</a>
+            @endif
+        </div>
+    </div>
+@endif
+@if (!empty($reviews))
+    <div class="mt-5">
+        <h4 class="fw-bold text-primary mb-4">Qué dicen los demás...</h4>
+
+        <div class="row g-4">
+        @foreach (array_values($reviews) as $index => $review)
+        @php
+                    $text = $review['rawReview']['public_review'] ?? null;
+                    $rating = $review['rawReview']['overall_rating'] ?? 0;
+                    $avatarId = ($index % 70) + 1; // pravatar tiene 70 imágenes numeradas
+                    $imgUrl = "https://i.pravatar.cc/150?img={$avatarId}";
                 @endphp
-                <h4>{{ $title }}</h4>
-                <p id="{{ $key }}">
-                    <span class="short-text">{{ $shortContent }}</span>
-                    <span class="d-none full-text">{{ $content }}</span>
-                    @if(strlen($content) > 200)
-                        <a href="#" class="text-blue see-more" data-target="{{ $key }}">Ver más</a>
-                    @endif
-                </p>
+
+                @if($text)
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 p-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="{{ $imgUrl }}" class="rounded-circle me-3" width="50" height="50" alt="Avatar">
+                                <div>
+                                    <strong>Invitado</strong><br>
+                                    <small class="text-muted">Huésped verificado</small>
+                                </div>
+                            </div>
+
+                            @php
+                            $shortText = Str::limit($text, 200);
+                        @endphp
+
+                        <div class="review-text mb-3" style="font-size: 0.95rem; color: #555;">
+                            <span class="short-text">{{ $shortText }}</span>
+                            <span class="full-text d-none">{{ $text }}</span>
+
+                            @if(strlen($text) > 200)
+                                <a href="#" class="text-blue fw-semibold see-more-review d-block mt-1" style="font-size: 0.9rem;">Ver más &gt;&gt;</a>
+                            @endif
+                        </div>
+
+                            <div>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star {{ $i <= $rating ? 'text-warning' : 'text-secondary' }}"></i>
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @endforeach
         </div>
+    </div>
+@endif
+
+</div>
+
 
        <!-- 📌 FORMULARIO STICKY PARA RESERVAR -->
        <div class="col-md-5">
@@ -165,7 +245,51 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+
  document.addEventListener('DOMContentLoaded', function() {
+       // Ver más/menos descripción (ya existente)
+       document.querySelectorAll('.see-more-review').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const container = this.closest('.review-text');
+                const shortText = container.querySelector('.short-text');
+                const fullText = container.querySelector('.full-text');
+
+                const isHidden = fullText.classList.contains('d-none');
+                shortText.classList.toggle('d-none');
+                fullText.classList.toggle('d-none');
+
+                this.textContent = isHidden ? 'Ver menos <<' : 'Ver más >>';
+            });
+        });
+       
+       document.querySelectorAll('.see-more-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const descriptionBlock = document.querySelector('.description-section');
+                const shortText = descriptionBlock.querySelector('.short-text');
+                const fullText = descriptionBlock.querySelector('.full-text');
+                if (fullText.classList.contains('d-none')) {
+                    shortText.classList.add('d-none');
+                    fullText.classList.remove('d-none');
+                    this.textContent = 'Ver menos <<';
+                } else {
+                    shortText.classList.remove('d-none');
+                    fullText.classList.add('d-none');
+                    this.textContent = 'Ver más >>';
+                }
+            });
+        });
+
+        // Ver más amenities
+        const seeMoreAmenities = document.querySelector('.see-more-amenities');
+        if (seeMoreAmenities) {
+            seeMoreAmenities.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelectorAll('.extra-amenity').forEach(el => el.classList.toggle('d-none'));
+                this.textContent = this.textContent.includes('más') ? 'Ver menos <<' : 'Ver más >>';
+            });
+        }
     const bookedDates = @json($bookedDates);
 
     // Elemento para mostrar desglose de precios (ya creado en el HTML)

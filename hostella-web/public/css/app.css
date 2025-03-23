@@ -584,10 +584,13 @@ body {
 }
 
 .hostella-footer {
-    background-color: var(--hostella-dark);
-    background-image: linear-gradient(135deg, #1c2d41 0%, #121e2d 100%);
-    color: #fff;
+    background-image: url('/images/footer.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    color: #fff; /* Para asegurar que el texto sea legible */
     position: relative;
+    z-index: 1;
 }
 
 /* Logo y marca */
@@ -875,6 +878,24 @@ body {
 }
 .view-images-btn:hover {
     background-color: #003d82; /* Un azul más oscuro al pasar el mouse */
+}
+.description-section {
+    font-size: 1rem;
+    color: #444;
+}
+
+.see-more-link {
+    display: inline-block;
+    margin-top: 8px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.see-more-link:hover {
+    text-decoration: underline;
+}
+text-blue{
+    color: #000066;
 }
 
 @keyframes fadeInUp {

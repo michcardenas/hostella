@@ -40,29 +40,32 @@ class PropertiesController extends Controller
     public function show($id)
     {
         try {
-            // Obtener la propiedad por ID usando la API de Guesty
+            // Obtener propiedad
             $property = $this->guestyService->getListing($id);
     
             if (!$property || empty($property)) {
                 return redirect()->route('properties.index')->with('error', 'Propiedad no encontrada.');
             }
     
-            // Obtener calendario de disponibilidad desde 30 días atrás hasta 30 días adelante
+            // Obtener calendario
             $from = now()->subDays(30)->format('Y-m-d');
             $to = now()->addDays(30)->format('Y-m-d');
             $calendar = $this->guestyService->getListingCalendar($id, $from, $to);
     
-            // Extraer solo las fechas reservadas
-            $bookedDates = collect($calendar)->filter(function ($day) {
-                return $day['status'] === 'booked';
-            })->pluck('date')->values()->toArray();
+            $bookedDates = collect($calendar)->filter(fn($day) => $day['status'] === 'booked')
+                ->pluck('date')->values()->toArray();
     
-            return view('properties.show', compact('property', 'bookedDates'));
+            // ✅ Obtener reviews
+            $response = $this->guestyService->getListingReviews($id, 10);
+            $reviews = $response['data'] ?? [];
+            return view('properties.show', compact('property', 'bookedDates', 'reviews'));
     
         } catch (\Exception $e) {
-            return redirect()->route('properties.index')->with('error', 'No se pudo cargar la propiedad. Inténtelo más tarde.');
+            \Log::error('Error en show(): ' . $e->getMessage());
+            return redirect()->route('properties.index')->with('error', 'No se pudo cargar la propiedad.');
         }
     }
+    
     
     
     
