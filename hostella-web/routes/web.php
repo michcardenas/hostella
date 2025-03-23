@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PropertiesController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PaginaController;
+
+
 
 
 
@@ -65,3 +70,17 @@ Route::prefix('token-test')->group(function () {
 Route::post('/properties/{id}/confirm-reservation', [PropertiesController::class, 'confirmReservation'])->name('properties.confirm-reservation');
 Route::post('/properties/process-reservation', [PropertiesController::class, 'processReservation'])->name('properties.process-reservation');
 Route::get('/properties/redirect-to-portal', [PropertiesController::class, 'redirectToPortal'])->name('properties.redirect-to-portal');
+
+//Admin
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::middleware('auth')->put('/pagina/{id}', [PaginaController::class, 'update'])->name('admin.pagina.update');
+Route::middleware('auth')->get('/admin/pagina/propiedades', [PaginaController::class, 'showPropiedades'])->name('admin.pagina.propiedades');
+
+Route::middleware('auth')->get('/admin/pagina/propiedades/edit', [PaginaController::class, 'editPropiedades'])->name('admin.pagina.propiedades.edit');
+Route::middleware('auth')->post('/admin/pagina/propiedades/update', [PaginaController::class, 'updatePropiedades'])->name('admin.pagina.propiedades.update');
+
+

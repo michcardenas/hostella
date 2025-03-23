@@ -29,8 +29,14 @@
 
     <!-- Contenido superpuesto -->
     <div class="carousel-overlay text-center">
-        <h1 class="display-4 fw-bold text-white">Descubre Propiedades Exclusivas</h1>
-        <h2 class="lead text-white">Explora villas y alojamientos de lujo en los mejores destinos</h2>
+    <h1 class="display-4 fw-bold text-white">
+        {{ $pagina->h1 ?? 'Descubre Propiedades Exclusivas' }}
+    </h1>
+
+    <h2 class="lead text-white">
+        {{ $pagina->h2_1 ?? 'Explora villas y alojamientos de lujo en los mejores destinos' }}
+    </h2>
+
         <!-- <a href="{{ route('properties.index') }}" class="btn btn-primary mt-3">Ver Propiedades</a> -->
 
         <div class="search-box-overlay">
@@ -81,8 +87,14 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-8">
-                    <h2 class="fw-bold">Propiedades Destacadas</h2>
-                    <p class="text-muted">Descubre nuestras propiedades más exclusivas</p>
+                <h2 class="fw-bold">
+                    {{ $pagina->h2_propiedades ?? 'Propiedades Destacadas' }}
+                </h2>
+
+                <p class="text-muted">
+                    {{ $pagina->p_propiedades ?? 'Descubre nuestras propiedades más exclusivas' }}
+                </p>
+
                 </div>
                 <div class="col-md-4 text-md-end">
                     <a href="{{ route('properties.index') }}" class="btn btn-outline-primary">Ver todas</a>
@@ -128,59 +140,61 @@
     <div class="container">
         <div class="row mb-5 text-center">
             <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold" style="color: #1c2d41;">Maximiza el potencial de tu propiedad con Hostella</h2>
-                <p class="text-muted">¿Por qué elegir Hostella?</p>
+                <h2 class="fw-bold" style="color: #1c2d41;">
+                    {{ $pagina->h2_hostella ?? 'Maximiza el potencial de tu propiedad con Hostella' }}
+                </h2>
+                <p class="text-muted">
+                    {{ $pagina->p_hostella ?? '¿Por qué elegir Hostella?' }}
+                </p>
             </div>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="benefit-card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon text-white rounded-circle mb-4">
-                            <i class="fas fa-chart-line fa-2x"></i>
-                        </div>
-                        <h4 class="card-title">Rentabilidad Máxima</h4>
-                        <p class="text-muted">Optimizamos cada propiedad con tecnología para maximizar tu rentabilidad y ocupación.</p>
-                    </div>
-                </div>
-            </div>
+            @for ($i = 1; $i <= 3; $i++)
+                <div class="col-lg-4">
+                    <div class="benefit-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            {{-- Imagen personalizada si existe --}}
+                            @php
+                                $imageField = 'card1_image_' . $i;
+                                $titleField = 'card1_title_' . $i;
+                                $contentField = 'card1_content_' . $i;
+                            @endphp
 
-            <div class="col-lg-4">
-                <div class="benefit-card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon text-white rounded-circle mb-4">
-                            <i class="fas fa-cogs fa-2x"></i>
-                        </div>
-                        <h4 class="card-title">Automatización Inteligente</h4>
-                        <p class="text-muted">Automatizamos procesos clave para ahorrar tiempo, optimizar operaciones y aumentar la eficiencia.</p>
-                    </div>
-                </div>
-            </div>
+                            @if (!empty($pagina->$imageField))
+                            <img 
+                                src="{{ asset('images/' . $pagina->$imageField) }}" 
+                                alt="Imagen tarjeta {{ $i }}" 
+                                class="mb-4 img-fluid" 
+                                style="max-height: 120px; object-fit: contain; width: 100%; max-width: 100%;">
+                            @else
+                                {{-- Ícono por defecto si no hay imagen --}}
+                                <div class="feature-icon text-white rounded-circle mb-4">
+                                    @if ($i === 1)
+                                        <i class="fas fa-chart-line fa-2x"></i>
+                                    @elseif ($i === 2)
+                                        <i class="fas fa-cogs fa-2x"></i>
+                                    @else
+                                        <i class="fas fa-concierge-bell fa-2x"></i>
+                                    @endif
+                                </div>
+                            @endif
 
-            <div class="col-lg-4">
-                <div class="benefit-card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon text-white rounded-circle mb-4">
-                            <i class="fas fa-concierge-bell fa-2x"></i>
+                            <h4 class="card-title">
+                                {{ $pagina->$titleField ?? "Título tarjeta $i" }}
+                            </h4>
+                            <p class="text-muted">
+                                {{ $pagina->$contentField ?? "Contenido tarjeta $i" }}
+                            </p>
                         </div>
-                        <h4 class="card-title">Experiencias Memorables</h4>
-                        <p class="text-muted">Brindamos servicios exclusivos para ofrecer momentos inolvidables a tus huéspedes.</p>
                     </div>
                 </div>
-            </div>
+            @endfor
         </div>
-
-        <!-- <div class="row text-center mt-5">
-            <div class="col-lg-12">
-                <button class="animated-button">
-                    <span>Explorar más</span>
-                    <span></span>
-                </button>
-            </div>
-        </div> -->
     </div>
 </section>
+
+
 
 
 
@@ -195,7 +209,7 @@
             <div class="row align-items-center">
                 <!-- Columna de texto -->
                 <div class="col-md-6 text-section">
-                    <p class="text-muted">{{ $property['description'] ?? 'El lugar favorito, según nuestros huéspedes.' }}</p>
+                    <p class="text-muted">{{$pagina->p_lugar_favorito ?? 'El lugar favorito, según nuestros huéspedes.' }}</p>
                     <div class="stars">
                         @php
                             $rating = $property['rating'] ?? 5; // Usa la calificación si está disponible
@@ -230,59 +244,56 @@
     <div class="container">
         <div class="row mb-5 text-center">
             <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold">¿Por qué los propietarios confían en Hostella?</h2>
-                <p class="text-muted">Valores que hacen la diferencia en la gestión de tu propiedad.</p>
+            <h2 class="fw-bold">
+                {{ $pagina->h2_confiar ?? '¿Por qué los propietarios confían en Hostella?' }}
+            </h2>
+
+            <p class="text-muted">
+                {{ $pagina->p_confiar ?? 'Valores que hacen la diferencia en la gestión de tu propiedad.' }}
+            </p>
+
             </div>
         </div>
 
         <div class="row g-4 text-center">
-            <div class="col-lg-3">
-                <div class="feature-card">
-                    <div class="feature-icon rounded-circle text-white mb-4">
-                        <i class="fas fa-laptop-house fa-2x"></i>
-                    </div>
-                    <h5 class="feature-title">Innovación Digital</h5>
-                    <p class="feature-text">Tecnología avanzada para optimizar ingresos, tarifas dinámicas y análisis de mercado en tiempo real.</p>
-                </div>
-            </div>
+        @for ($i = 4; $i <= 7; $i++)
+        <div class="col-lg-3 col-md-6">
+            <div class="feature-card h-100 p-4 border-0 shadow-sm bg-white rounded">
+                @php
+                    $title = "card2_title_$i";
+                    $content = "card2_content_$i";
+                    $image = "card2_image_$i";
+                @endphp
 
-            <div class="col-lg-3">
-                <div class="feature-card">
-                    <div class="feature-icon rounded-circle text-white mb-4">
-                        <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                {{-- Imagen si existe --}}
+                @if (!empty($pagina->{$image}))
+                    <img src="{{ asset('images/' . $pagina->{$image}) }}" alt="Imagen tarjeta {{ $i }}"
+                         style="max-height: 100px; object-fit: contain; width: 100%; max-width: 100%;" class="mb-4">
+                @else
+                    <div class="feature-icon rounded-circle text-white mb-4 bg-primary d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        @switch($i)
+                            @case(4) <i class="fas fa-seedling fa-2x"></i> @break
+                            @case(5) <i class="fas fa-shield-alt fa-2x"></i> @break
+                            @case(6) <i class="fas fa-clock fa-2x"></i> @break
+                            @case(7) <i class="fas fa-handshake fa-2x"></i> @break
+                        @endswitch
                     </div>
-                    <h5 class="feature-title">Transparencia Total</h5>
-                    <p class="feature-text">Reportes financieros claros, detallados y asesoría constante para mantenerte informado.</p>
-                </div>
-            </div>
+                @endif
 
-            <div class="col-lg-3">
-                <div class="feature-card">
-                    <div class="feature-icon rounded-circle text-white mb-4">
-                        <i class="fas fa-tasks fa-2x"></i>
-                    </div>
-                    <h5 class="feature-title">Gestión Integral</h5>
-                    <p class="feature-text">Administramos todo, desde optimización inicial hasta operaciones diarias, liberando tu tiempo.</p>
-                </div>
+                <h5 class="feature-title">{{ $pagina->{$title} ?? 'Título tarjeta ' . $i }}</h5>
+                <p class="feature-text text-muted">{{ $pagina->{$content} ?? 'Descripción de tarjeta ' . $i }}</p>
             </div>
-
-            <div class="col-lg-3">
-                <div class="feature-card">
-                    <div class="feature-icon rounded-circle text-white mb-4">
-                        <i class="fas fa-seedling fa-2x"></i>
-                    </div>
-                    <h5 class="feature-title">Crecimiento Sostenible</h5>
-                    <p class="feature-text">Creamos estrategias que aseguran un crecimiento constante y sostenible para tu propiedad.</p>
-                </div>
-            </div>
+        </div>
+    @endfor
         </div>
 
         <div class="row text-center mt-5">
             <div class="col-lg-12">
-                <button class="animated-button">
-                    <span>Explorar más</span>
-                    <span></span>
-                </button>
+            <a href="{{ route('about') }}" class="animated-button">
+                <span>Explorar más</span>
+                <span></span>
+            </a>
+
             </div>
         </div>
     </div>

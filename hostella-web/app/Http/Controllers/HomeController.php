@@ -21,26 +21,56 @@ class HomeController extends Controller
      public function index()
      {
          try {
-             // Obtener propiedades sin "sort"
+             // Obtener propiedades destacadas
              $featuredProperties = $this->guestyService->getListings([
-                 'limit' => 4 // Eliminamos el parámetro "sort" porque no es permitido
+                 'limit' => 4
              ]);
      
-             // Extraer imágenes
+             // Obtener imágenes destacadas
              $featuredImages = $this->getFeaturedImages($featuredProperties['results'] ?? []);
+     
+             // Obtener la página con ID 1
+             $paginaModel = \App\Models\Pagina::with('meta')->find(1);
+     
+             // Si no existe, crear instancias vacías
+             if (!$paginaModel) {
+                 $pagina = new \App\Models\Pagina();
+                 $seo = new \App\Models\PaginaMeta();
+             } else {
+                 $pagina = $paginaModel;
+                 $seo = $paginaModel->meta ?? new \App\Models\PaginaMeta();
+             }
      
              return view('home', [
                  'featuredProperties' => $featuredProperties['results'] ?? [],
-                 'featuredImages' => $featuredImages
+                 'featuredImages' => $featuredImages,
+                 'pagina' => $pagina,
+                 'seo' => $seo
              ]);
+     
          } catch (\Exception $e) {
              \Log::error('Error al obtener propiedades:', ['error' => $e->getMessage()]);
+     
+             // Cargar contenido SEO y de página aunque haya error en Guesty
+             $paginaModel = \App\Models\Pagina::with('meta')->find(1);
+     
+             if (!$paginaModel) {
+                 $pagina = new \App\Models\Pagina();
+                 $seo = new \App\Models\PaginaMeta();
+             } else {
+                 $pagina = $paginaModel;
+                 $seo = $paginaModel->meta ?? new \App\Models\PaginaMeta();
+             }
+     
              return view('home', [
                  'featuredProperties' => [],
-                 'featuredImages' => []
+                 'featuredImages' => [],
+                 'pagina' => $pagina,
+                 'seo' => $seo
              ]);
          }
      }
+     
      
 
 
@@ -72,8 +102,15 @@ class HomeController extends Controller
      */
     public function about()
     {
-        return view('about');
+        // Datos generales
+        $pagina = \App\Models\Pagina::find(1);
+    
+        // Datos específicos de "Nosotros"
+        $contenido = \App\Models\Pagina::find(3);
+    
+        return view('about', compact('pagina', 'contenido'));
     }
+    
 
     /**
      * Mostrar la página de contacto

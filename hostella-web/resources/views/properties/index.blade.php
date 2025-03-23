@@ -3,6 +3,7 @@
 @section('title', 'Propiedades - Hostella')
 
 @section('content')
+
 <!-- Banner hero moderno para Hostella -->
 <div class="hostella-hero-banner">
     <div class="hostella-overlay"></div>
@@ -10,9 +11,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-md-10">
-                    <h1 class="hostella-main-title">Relájate en tu próxima aventura</h1>
-                    <h2 class="hostella-subtitle">Propiedades exclusivas para momentos únicos</h2>
-                    <h3 class="hostella-description">Descubre alojamientos excepcionales verificados por Hostella</h3>
+                <h1 class="hostella-main-title">{{ $paginapropiedades->h1 ?? 'Relájate en tu próxima aventura' }}</h1>
+                <h2 class="hostella-subtitle">{{ $paginapropiedades->h2_1 ?? 'Propiedades exclusivas para momentos únicos' }}</h2>
+
                 </div>
             </div>
         </div>
@@ -56,6 +57,12 @@
         <p class="text-center text-muted">No hay propiedades disponibles en este momento.</p>
     @endif
 </div>
+@php
+    $bannerImage = $paginapropiedades->card2_image_4 
+        ? asset('images/' . $paginapropiedades->card2_image_4) 
+        : asset('images/relax.webp');
+@endphp
+
 
 <!-- Estilos personalizados -->
 <style>
@@ -65,7 +72,7 @@
   .hostella-hero-banner {
     position: relative;
     height: 500px;
-    background-image: url('{{ asset("images/relax.webp") }}');
+    background-image: url('{{ $bannerImage }}');
     background-size: cover;
     background-position: center;
     margin-bottom: 50px;

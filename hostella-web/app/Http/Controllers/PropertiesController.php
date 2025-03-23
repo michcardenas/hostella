@@ -20,19 +20,39 @@ class PropertiesController extends Controller
     public function index(Request $request)
     {
         try {
+            // Obtener propiedades desde Guesty
             $properties = $this->guestyService->getListings([]);
-
+    
+            // Obtener página con ID 2 y su relación meta
+            $pagina = \App\Models\Pagina::with('meta')->find(2);
+    
+            // Asegurar que haya un objeto aunque no exista el registro
+            if (!$pagina) {
+                $paginapropiedades = new \App\Models\Pagina();
+                $seo = new \App\Models\PaginaMeta();
+            } else {
+                $paginapropiedades = $pagina;
+                $seo = $pagina->meta ?? new \App\Models\PaginaMeta();
+            }
+    
             return view('properties.index', [
                 'properties' => $properties['results'] ?? [],
-                'filters' => $request->all()
+                'filters' => $request->all(),
+                'paginapropiedades' => $paginapropiedades,
+                'seo' => $seo
             ]);
+    
         } catch (\Exception $e) {
             return view('properties.index', [
                 'properties' => [],
+                'filters' => $request->all(),
+                'paginapropiedades' => new \App\Models\Pagina(),
+                'seo' => new \App\Models\PaginaMeta(),
                 'error' => 'No se pudieron cargar las propiedades. Inténtelo de nuevo más tarde.'
             ]);
         }
     }
+    
 
     /**
      * Muestra una propiedad en detalle según su ID.

@@ -3,7 +3,7 @@
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/Hostella_logo_horizontal.png') }}" alt="Hostella" height="40">
+            <img src="{{ asset('images/' . ($pagina->logo ?? 'Hostella_logo_horizontal.png')) }}" alt="Hostella" height="40">
         </a>
         
         <!-- Botón móvil -->
@@ -31,18 +31,27 @@
             </ul>
             
             <!-- Redes sociales -->
-            <div class="hostella-social-nav ms-lg-4 d-flex align-items-center">
-                <a href="https://instagram.com/hostella" target="_blank" class="hostella-social-icon instagram" aria-label="Instagram">
+            <div class="hostella-social-nav d-flex align-items-center gap-3">
+            @if (!empty($pagina->instagram))
+                <a href="{{ $pagina->instagram }}" target="_blank" class="hostella-social-icon instagram" aria-label="Instagram">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://facebook.com/hostella" target="_blank" class="hostella-social-icon facebook" aria-label="Facebook">
+            @endif
+
+            @if (!empty($pagina->facebook))
+                <a href="{{ $pagina->facebook }}" target="_blank" class="hostella-social-icon facebook" aria-label="Facebook">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://wa.me/1234567890" target="_blank" class="hostella-whatsapp-btn" aria-label="WhatsApp">
+            @endif
+
+            @if (!empty($pagina->whatsapp))
+                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pagina->whatsapp) }}" target="_blank" class="hostella-whatsapp-btn" aria-label="WhatsApp">
                     <i class="fab fa-whatsapp"></i>
                     <span>WhatsApp</span>
                 </a>
-            </div>
+            @endif
+        </div>
+
         </div>
     </div>
 </nav>
