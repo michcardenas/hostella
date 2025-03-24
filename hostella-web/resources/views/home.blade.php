@@ -163,7 +163,8 @@
 
                             @if (!empty($pagina->$imageField))
                             <img 
-                                src="{{ asset('images/' . $pagina->$imageField) }}" 
+                            src="{{ asset($pagina->$imageField) }}"
+
                                 alt="Imagen tarjeta {{ $i }}" 
                                 class="mb-4 img-fluid" 
                                 style="max-height: 120px; object-fit: contain; width: 100%; max-width: 100%;">

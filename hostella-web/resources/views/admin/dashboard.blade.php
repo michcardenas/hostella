@@ -85,7 +85,7 @@
 
                         @if (!empty($pagina->$imageField))
                             <div class="mt-2">
-                                <img src="{{ asset('images/' . $pagina->$imageField) }}" alt="Imagen tarjeta {{ $i }}" style="max-height: 100px;">
+                            <img src="{{ url('images/' . $pagina->$imageField) }}" alt="Imagen tarjeta {{ $i }}" style="max-height: 100px;">
                             </div>
                         @endif
                     </div>
