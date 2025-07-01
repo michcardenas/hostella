@@ -8,7 +8,7 @@
                         <img src="{{ asset('images/' . ($pagina->logo ?? 'Hostella_Logo_horizontal_Blanco_.png')) }}" alt="Hostella" class="footer-logo">
                     </div>
                     <p class="footer-description">
-                       Descubre las más exclusivas villas y propiedades de lujo con Hostella, tu socio confiable para experiencias inolvidables
+                        Descubre las más exclusivas villas y propiedades de lujo con Hostella, tu socio confiable para experiencias inolvidables
                     </p>
                 </div>
             </div>
@@ -37,73 +37,73 @@
 
             <!-- Contacto -->
             <div class="col-lg-4 col-md-4">
-    <h5 class="footer-heading">Contacto</h5>
-    <ul class="contact-info">
-        <li>
-            <div class="icon-wrapper">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <span>República Dominicana</span>
-        </li>
+                <h5 class="footer-heading">Contacto</h5>
+                <ul class="contact-info">
+                    <li>
+                        <div class="icon-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <span>República Dominicana</span>
+                    </li>
 
-        <li>
-            <div class="icon-wrapper">
-                <i class="fas fa-phone"></i>
-            </div>
-            <span>
-                @if (isset($pagina) && $pagina->whatsapp)
-                    {{ preg_match('/^\+?(\d{1,3})(\d{3})(\d{3})(\d{4})$/', preg_replace('/[^0-9]/', '', $pagina->whatsapp), $matches)
+                    <li>
+                        <div class="icon-wrapper">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <span>
+                            @if (isset($pagina) && $pagina->whatsapp)
+                            {{ preg_match('/^\+?(\d{1,3})(\d{3})(\d{3})(\d{4})$/', preg_replace('/[^0-9]/', '', $pagina->whatsapp), $matches)
                         ? "+{$matches[1]} ({$matches[2]}) {$matches[3]}-{$matches[4]}"
                         : $pagina->whatsapp }}
-                @else
-                    +1 (123) 456-7890
-                @endif
-            </span>
-        </li>
+                            @else
+                            +1 (123) 456-7890
+                            @endif
+                        </span>
+                    </li>
 
-        <li>
-            <div class="icon-wrapper">
-                <i class="fas fa-envelope"></i>
+                    <li>
+                        <div class="icon-wrapper">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <span>info@hostella.com</span>
+                    </li>
+                </ul>
+
+                <!-- Redes sociales dinámicas -->
+                <div class="social-links">
+                    @if (isset($pagina) && $pagina->instagram)
+                    <a href="{{ $pagina->instagram }}" target="_blank" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    @endif
+                    @if (isset($pagina) && $pagina->facebook)
+                    <a href="{{ $pagina->facebook }}" target="_blank" aria-label="Facebook">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    @endif
+                    @if (isset($pagina) && $pagina->whatsapp)
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pagina->whatsapp) }}" target="_blank" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    @endif
+                </div>
             </div>
-            <span>info@hostella.com</span>
-        </li>
-    </ul>
 
-    <!-- Redes sociales dinámicas -->
-    <div class="social-links">
-        @if (isset($pagina) && $pagina->instagram)
-            <a href="{{ $pagina->instagram }}" target="_blank" aria-label="Instagram">
-                <i class="fab fa-instagram"></i>
-            </a>
-        @endif
-        @if (isset($pagina) && $pagina->facebook)
-            <a href="{{ $pagina->facebook }}" target="_blank" aria-label="Facebook">
-                <i class="fab fa-facebook"></i>
-            </a>
-        @endif
-        @if (isset($pagina) && $pagina->whatsapp)
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pagina->whatsapp) }}" target="_blank" aria-label="WhatsApp">
-                <i class="fab fa-whatsapp"></i>
-            </a>
-        @endif
+        </div>
     </div>
-</div>
 
+    <div class="footer-divider my-4"></div>
+
+    <!-- Copyright -->
+    <div class="footer-bottom">
+        <div class="row align-items-center">
+            <div class="footer-bottom text-center">
+                <p class="mb-0 copyright">&copy; {{ date('Y') }} Hostella. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                {{-- Aquí podrías incluir links secundarios o versión --}}
             </div>
         </div>
-
-        <div class="footer-divider my-4"></div>
-
-        <!-- Copyright -->
-        <div class="footer-bottom">
-            <div class="row align-items-center">
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <p class="copyright">&copy; {{ date('Y') }} Hostella. Todos los derechos reservados.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    {{-- Aquí podrías incluir links secundarios o versión --}}
-                </div>
-            </div>
-        </div>
+    </div>
     </div>
 </footer>

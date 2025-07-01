@@ -8,7 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PropertiesController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PaginaController;
-
+use App\Http\Controllers\Square\CheckoutController;
 
 
 
@@ -70,7 +70,9 @@ Route::prefix('token-test')->group(function () {
 Route::post('/properties/{id}/confirm-reservation', [PropertiesController::class, 'confirmReservation'])->name('properties.confirm-reservation');
 Route::post('/properties/process-reservation', [PropertiesController::class, 'processReservation'])->name('properties.process-reservation');
 Route::get('/properties/redirect-to-portal', [PropertiesController::class, 'redirectToPortal'])->name('properties.redirect-to-portal');
-
+Route::post('/properties/payment-form/{id}', [PropertiesController::class, 'showPaymentForm'])->name('properties.payment-form');
+Route::post('/properties/{id}/tokenize-card', [PropertiesController::class, 'tokenizeCard'])->name('properties.tokenize-card');
+Route::post('/properties/process-payment/{id}', [PropertiesController::class, 'processPayment'])->name('properties.process-payment');
 //Admin
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -83,4 +85,21 @@ Route::middleware('auth')->get('/admin/pagina/propiedades', [PaginaController::c
 Route::middleware('auth')->get('/admin/pagina/propiedades/edit', [PaginaController::class, 'editPropiedades'])->name('admin.pagina.propiedades.edit');
 Route::middleware('auth')->post('/admin/pagina/propiedades/update', [PaginaController::class, 'updatePropiedades'])->name('admin.pagina.propiedades.update');
 
+Route::prefix('square')->controller(\App\Http\Controllers\Square\CheckoutController::class)->group(function () {
+    Route::get('/locations', 'locations')->name('square.locations');
+    Route::post('/pagar', 'pagar')->name('square.pagar');
+    Route::post('/pagar-efectivo', 'pagarEfectivo')->name('square.pagar-efectivo');
+});
 
+Route::prefix('admin/pagos')->name('admin.pagos.')->middleware(['auth'])->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\PagoController::class, 'index'])->name('index');
+});
+
+Route::get('/pago/exito/{id}', function($id) {
+    $payment = \App\Models\PropertyPayment::findOrFail($id);
+    return view('payments.success', compact('payment'));
+})->name('pago.exito');
+
+Route::get('/pago/fallo', function() {
+    return view('payments.failure');
+})->name('pago.fallo');

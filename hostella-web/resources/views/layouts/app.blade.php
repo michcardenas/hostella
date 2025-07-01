@@ -25,6 +25,25 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     @yield('styles')
+        <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 
 

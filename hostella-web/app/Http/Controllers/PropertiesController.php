@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\GuestyService;
+use Illuminate\Support\Facades\Log;
+use App\Models\PropertyPayment;
 
 class PropertiesController extends Controller
 {
@@ -58,33 +60,53 @@ class PropertiesController extends Controller
      * Muestra una propiedad en detalle según su ID.
      */
     public function show($id)
-    {
-        try {
-            // Obtener propiedad
-            $property = $this->guestyService->getListing($id);
-    
-            if (!$property || empty($property)) {
-                return redirect()->route('properties.index')->with('error', 'Propiedad no encontrada.');
-            }
-    
-            // Obtener calendario
-            $from = now()->subDays(30)->format('Y-m-d');
-            $to = now()->addDays(30)->format('Y-m-d');
-            $calendar = $this->guestyService->getListingCalendar($id, $from, $to);
-    
-            $bookedDates = collect($calendar)->filter(fn($day) => $day['status'] === 'booked')
-                ->pluck('date')->values()->toArray();
-    
-            // ✅ Obtener reviews
-            $response = $this->guestyService->getListingReviews($id, 10);
-            $reviews = $response['data'] ?? [];
-            return view('properties.show', compact('property', 'bookedDates', 'reviews'));
-    
-        } catch (\Exception $e) {
-            \Log::error('Error en show(): ' . $e->getMessage());
-            return redirect()->route('properties.index')->with('error', 'No se pudo cargar la propiedad.');
+{
+    try {
+        // Obtener propiedad
+        $property = $this->guestyService->getListing($id);
+
+        if (!$property || empty($property)) {
+            return redirect()->route('properties.index')->with('error', 'Propiedad no encontrada.');
         }
+
+        // Obtener calendario desde Guesty
+        $from = now()->subDays(30)->format('Y-m-d');
+        $to = now()->addDays(30)->format('Y-m-d');
+        $calendar = $this->guestyService->getListingCalendar($id, $from, $to);
+
+        $bookedDates = collect($calendar)
+            ->filter(fn($day) => $day['status'] === 'booked')
+            ->pluck('date')
+            ->values()
+            ->toArray();
+
+        // ✅ Agregar fechas ocupadas por pagos en la base de datos
+        $pagos = PropertyPayment::where('listing_id', $id)
+            ->where('payment_status', 'COMPLETED')
+            ->get(['check_in', 'check_out']);
+
+        foreach ($pagos as $pago) {
+            $period = \Carbon\CarbonPeriod::create($pago->check_in, $pago->check_out);
+            foreach ($period as $date) {
+                $bookedDates[] = $date->format('Y-m-d');
+            }
+        }
+
+        // Eliminar duplicados
+        $bookedDates = array_unique($bookedDates);
+
+        // Obtener reviews
+        $response = $this->guestyService->getListingReviews($id, 10);
+        $reviews = $response['data'] ?? [];
+
+        return view('properties.show', compact('property', 'bookedDates', 'reviews'));
+
+    } catch (\Exception $e) {
+        \Log::error('Error en show(): ' . $e->getMessage());
+        return redirect()->route('properties.index')->with('error', 'No se pudo cargar la propiedad.');
     }
+}
+
     
     
     
@@ -204,18 +226,19 @@ class PropertiesController extends Controller
     }
 }
 // En PropertiesController.php
-public function redirectToGuestPortal(Request $request)
+public function redirectToPortal(Request $request)
 {
     $validated = $request->validate([
         'quoteId' => 'required|string',
     ]);
-    
+
     $quoteId = $validated['quoteId'];
-    $returnUrl = route('home'); // Usa una ruta que ya exista
-    
-    $portalUrl = $this->guestyService->getGuestPortalUrl($quoteId, $returnUrl);
-    
-    return redirect()->away($portalUrl);
+    $returnUrl = route('home'); // o donde quieras redirigir tras el pago
+
+    // Obtener la URL de pago desde el servicio Guesty
+    $paymentUrl = $this->guestyService->getGuestyPayUrl($quoteId, $returnUrl);
+
+    return redirect()->away($paymentUrl);
 }
 
 // En GuestyService.php (método para obtener la URL del portal)
@@ -355,6 +378,103 @@ public function confirmReservation(Request $request, $id)
     }
 }
 
+public function showPaymentForm(Request $request, $id)
+{
+    $propertyId = $id;
+
+    return view('properties.payment-form', [
+        'propertyId'       => $propertyId,
+        'totalPrice'       => $request->totalPrice,
+        'currency'         => $request->currency ?? 'USD',
+        'reservationData'  => $request->reservationData,
+        'guestName'        => $request->guestName,
+        'guestEmail'       => $request->guestEmail,
+        'guestPhone'       => $request->guestPhone,
+        'listingId'        => $request->listingId,
+        'checkIn'          => $request->checkIn,
+        'checkOut'         => $request->checkOut,
+        'quoteId'          => $request->quoteId,
+        'guestsCount'      => $request->guestsCount,
+    ]);
+}
+
+
+public function tokenizeCard(Request $request, $id)
+{
+        Log::info('👉 Iniciando tokenización de tarjeta para propiedad ID: ' . $id);
+    Log::debug('📨 Datos recibidos en el request', $request->all());
+
+
+    $validated = $request->validate([
+        'card_number' => 'required|string',
+        'exp_month' => 'required|string',
+        'exp_year' => 'required|string',
+        'cvc' => 'required|string',
+        'name' => 'required|string',
+        'address_line1' => 'required|string',
+        'city' => 'required|string',
+        'postal_code' => 'required|string',
+        'country' => 'required|string',
+        'amount' => 'required|numeric',
+        'currency' => 'required|string',
+        'listing_id' => 'required|string',
+        'payment_provider_id' => 'required|string',
+    ]);
+
+    Log::info('✅ Datos validados para tokenización', $validated);
+
+    $payload = [
+        "paymentProviderId" => $validated['payment_provider_id'],
+        "listingId" => $validated['listing_id'],
+        "card" => [
+            "number" => $validated['card_number'],
+            "exp_month" => $validated['exp_month'],
+            "exp_year" => $validated['exp_year'],
+            "cvc" => $validated['cvc'],
+        ],
+        "billing_details" => [
+            "name" => $validated['name'],
+            "address" => [
+                "line1" => $validated['address_line1'],
+                "city" => $validated['city'],
+                "postal_code" => $validated['postal_code'],
+                "country" => $validated['country'],
+            ],
+        ],
+        "threeDS" => [
+            "amount" => $validated['amount'],
+            "currency" => $validated['currency'],
+            "successURL" => route('payment.success'),
+            "failureURL" => route('payment.failure'),
+        ],
+        "merchantData" => [
+            "transactionId" => uniqid("Reserva-"),
+            "transactionDescription" => "Reserva desde plataforma",
+            "transactionDate" => now()->toIso8601String(),
+        ]
+    ];
+
+    Log::info('📦 Payload preparado para GuestyPay', $payload);
+
+    try {
+        $response = app(GuestyService::class)->tokenizeCard($payload);
+        Log::info('✅ Respuesta recibida desde GuestyPay', $response);
+
+        if (isset($response['threeDS']['authURL'])) {
+            Log::info('➡️ Redirigiendo a 3DS authURL');
+            return redirect()->away($response['threeDS']['authURL']);
+        }
+
+        Log::info('🎉 Tokenización completada sin 3DS. Token: ' . $response['_id']);
+        return redirect()->route('payment.success')->with('token_id', $response['_id']);
+
+    } catch (\Exception $e) {
+        Log::error('❌ Error durante la tokenización: ' . $e->getMessage());
+        return redirect()->route('payment.failure')->with('error', $e->getMessage());
+    }
+}
+
+
 /**
  * Procesa la información del huésped y la reserva.
  *
@@ -415,5 +535,29 @@ public function processReservation(Request $request)
             ->with('error', 'Error al procesar la reserva: ' . $e->getMessage());
     }
 }
+
+public function processPayment(Request $request, $id)
+{
+    $request->validate([
+        'source_id' => 'required|string',
+        'totalPrice' => 'required|numeric|min:1',
+    ]);
+
+    try {
+        $square = app(\App\Services\SquarePaymentService::class);
+
+        $result = $square->createPayment(
+            sourceId: $request->source_id,
+            amountCents: intval($request->totalPrice * 100),
+            currency: $request->currency ?? 'USD',
+            note: 'Pago de reserva propiedad ' . $id
+        );
+
+        return redirect()->route('properties.show', $id)->with('success', 'Pago realizado exitosamente.');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al procesar el pago: ' . $e->getMessage());
+    }
+}
+
 
 }

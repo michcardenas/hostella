@@ -26,32 +26,34 @@ class GuestyToken extends Model
         return Carbon::parse($this->expires_at)->lt(now()->addHour());
     }
 
-    /**
-     * Obtiene el token activo más reciente o null si no hay ninguno válido.
-     */
-    public static function getActiveToken()
-    {
-        // Obtener el token activo más reciente
-        $token = self::where('is_active', true)
-                     ->orderBy('created_at', 'desc')
-                     ->first();
-    
-        // Log para verificar si se encontró un token en la base de datos
-        if ($token) {
-            Log::info("Token encontrado en la BD: {$token->access_token}, Expira en: {$token->expires_at}");
-        } else {
-            Log::warning("No se encontró un token activo en la BD.");
-        }
-    
-        // Validar si el token aún es válido
-        if (!$token || Carbon::parse($token->expires_at)->lt(now())) {
-            Log::warning("El token encontrado ha expirado.");
-            return null;
-        }
-    
-        return $token;
+/**
+ * Obtiene el token activo más reciente basado en created_at.
+ */
+public static function getActiveToken()
+{
+    $tokenLifetime = 86400; // 24 horas en segundos
+
+    $token = self::where('is_active', true)
+                 ->orderBy('created_at', 'desc')
+                 ->first();
+
+    if (!$token) {
+        Log::warning("⚠️ No se encontró un token activo en la BD.");
+        return null;
     }
-    
+
+    $created = Carbon::parse($token->created_at);
+    $expiresAt = $created->addSeconds($tokenLifetime);
+
+    if ($expiresAt->isPast()) {
+        Log::warning("⚠️ El token ha expirado. Expiraba en: {$expiresAt}");
+        return null;
+    }
+
+    Log::info("✅ Token válido encontrado. Expira en: {$expiresAt}");
+    return $token;
+}
+
 
     /**
      * Almacena un nuevo token en la base de datos, desactivando los anteriores.

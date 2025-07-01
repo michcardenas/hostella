@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,27 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     @yield('styles')
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
+
 <body>
     @include('partials.admin-nav') <!-- Menú de navegación para admin -->
 
@@ -24,12 +45,13 @@
         @yield('content')
     </main>
 
-    <footer class="text-center py-4">
-        <p class="text-muted mb-0">&copy; {{ date('Y') }} Hostella - Panel de Administración</p>
+    <footer class="text-center py-3 bg-dark text-white">
+        © {{ date('Y') }} Hostella - Panel de Administración
     </footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
 </body>
+
 </html>

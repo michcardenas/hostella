@@ -48,8 +48,21 @@ class GuestyService
         ]);
     }
 
-    
-    
+    public function getGuestyPayUrl(string $quoteId, string $returnUrl): string
+    {
+        $response = Http::withToken(config('services.guesty.token'))
+            ->post('https://api.guesty.com/v1/quotes/' . $quoteId . '/pay', [
+                'returnUrl' => $returnUrl,
+            ]);
+
+        if ($response->failed()) {
+            throw new \Exception('Error al obtener la URL de GuestyPay');
+        }
+
+        return $response->json()['paymentUrl']; // o el campo correcto según Guesty
+    }
+
+
     /**
      * Crear una nueva reserva en Guesty
      */
@@ -58,7 +71,7 @@ class GuestyService
         try {
             $endpoint = "/reservations";
             $response = $this->makeRequest('POST', $endpoint, [], $reservationData);
-    
+
             if ($response['success']) {
                 return $response['data'];
             } else {
@@ -70,59 +83,59 @@ class GuestyService
         }
     }
     public function getReservationPrice($listingId, $checkIn, $checkOut, $guestsCount = 2)
-{
-    return $this->makeRequest('GET', '/reservations/money', [
-        'listingId' => $listingId,
-        'checkIn' => $checkIn,
-        'checkOut' => $checkOut,
-        'guestsCount' => $guestsCount
-    ]);
-}
-public function createReservationQuote($listingId, $checkIn, $checkOut, $guestsCount = 1, $coupons = null)
-{
-    $payload = [
-        'listingId' => $listingId,
-        'checkInDateLocalized' => $checkIn,
-        'checkOutDateLocalized' => $checkOut,
-        'guestsCount' => $guestsCount
-    ];
-    
-    if ($coupons) {
-        $payload['coupons'] = $coupons;
+    {
+        return $this->makeRequest('GET', '/reservations/money', [
+            'listingId' => $listingId,
+            'checkIn' => $checkIn,
+            'checkOut' => $checkOut,
+            'guestsCount' => $guestsCount
+        ]);
     }
-    
-    return $this->makeRequest('POST', '/reservations/quotes', [], $payload);
-}
+    public function createReservationQuote($listingId, $checkIn, $checkOut, $guestsCount = 1, $coupons = null)
+    {
+        $payload = [
+            'listingId' => $listingId,
+            'checkInDateLocalized' => $checkIn,
+            'checkOutDateLocalized' => $checkOut,
+            'guestsCount' => $guestsCount
+        ];
 
-public function getGuestPortalUrl($quoteId, $returnUrl)
-{
-    $payload = [
-        'returnUrl' => $returnUrl
-    ];
-    
-    try {
-        $response = $this->makeRequest('POST', "/reservations/quotes/{$quoteId}/guest-portal-link", [], $payload);
-        
-        if (isset($response['portalUrl'])) {
-            return $response['portalUrl'];
-        } else {
-            throw new \Exception('La respuesta no contiene la URL del portal');
+        if ($coupons) {
+            $payload['coupons'] = $coupons;
         }
-    } catch (\Exception $e) {
-        \Log::error('Error al obtener URL del portal de Guesty: ' . $e->getMessage());
-        throw new \Exception('No se pudo obtener el enlace al portal de reservas: ' . $e->getMessage());
+
+        return $this->makeRequest('POST', '/reservations/quotes', [], $payload);
     }
-}
+
+    public function getGuestPortalUrl($quoteId, $returnUrl)
+    {
+        $payload = [
+            'returnUrl' => $returnUrl
+        ];
+
+        try {
+            $response = $this->makeRequest('POST', "/reservations/quotes/{$quoteId}/guest-portal-link", [], $payload);
+
+            if (isset($response['portalUrl'])) {
+                return $response['portalUrl'];
+            } else {
+                throw new \Exception('La respuesta no contiene la URL del portal');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener URL del portal de Guesty: ' . $e->getMessage());
+            throw new \Exception('No se pudo obtener el enlace al portal de reservas: ' . $e->getMessage());
+        }
+    }
     /**
      * Método genérico para hacer solicitudes a la API de Guesty
      */
     protected function makeRequest($method, $endpoint, $queryParams = [], $data = null)
     {
         $url = $this->baseUrl . $endpoint;
-        
+
         // Obtener un token actualizado
         $token = $this->tokenService->getToken();
-        
+
         if (!$token) {
             throw new \Exception('No se pudo obtener un token válido para Guesty API');
         }

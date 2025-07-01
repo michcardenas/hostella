@@ -78,7 +78,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <h5 class="mb-3">Información del Huésped</h5>
-                            <form id="guestInfoForm" action="{{ route('properties.process-reservation') }}" method="POST">
+                            <form action="{{ route('properties.payment-form', ['id' => $property['_id']]) }}" method="POST">
                                 @csrf
                                 <!-- Campos ocultos para datos de la reserva -->
                                 <input type="hidden" name="listingId" value="{{ $property['_id'] }}">
@@ -88,6 +88,7 @@
                                 <input type="hidden" name="quoteId" value="{{ $quoteId }}">
                                 <input type="hidden" name="totalPrice" value="{{ $quoteData['money']['subTotalPrice'] ?? '0' }}">
                                 <input type="hidden" name="currency" value="{{ $quoteData['money']['currency'] ?? 'USD' }}">
+                                <input type="hidden" name="reservationData" value="{{ json_encode($quoteData) }}">
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">

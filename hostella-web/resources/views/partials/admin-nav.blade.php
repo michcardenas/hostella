@@ -14,7 +14,12 @@
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.pagina.propiedades.edit') }}">Propiedades</a>
+                    <a class="nav-link" href="{{ route('admin.pagina.propiedades.edit') }}">Propiedades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.pagos*') ? 'active' : '' }}" href="{{ route('admin.pagos.index') }}">
+                        Pagos
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Nosotros</a>
