@@ -171,8 +171,6 @@
 @endif
 
 </div>
-
-
        <!-- 📌 FORMULARIO STICKY PARA RESERVAR -->
        <div class="col-md-5">
             <div class="sticky-form">

@@ -17,12 +17,24 @@
                         Completa los datos de tu tarjeta para continuar.
                     </p>
 
-                    <!-- Formulario de tarjeta -->
-                    <div id="payment-form-container" class="mb-4"></div>
+                    <!-- Elemento de Stripe -->
+                    <form id="payment-form">
+                        <div id="payment-element" class="mb-4">
+                            <!-- Stripe injectará aquí el formulario -->
+                        </div>
 
-                    <!-- Detalles de envío -->
-                    <div class="border rounded p-3 mb-4 bg-light">
-                        <h6 class="mb-2 text-dark">🔍 Datos que se enviarán con el pago:</h6>
+                        <div class="d-grid gap-2">
+                            <button id="submit" class="btn text-white" style="background-color: #02006a;">
+                                Pagar ahora
+                            </button>
+                            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+
+                        <div id="payment-message" class="alert alert-info mt-3 d-none"></div>
+                    </form>
+
+                    <div class="border rounded p-3 mt-4 bg-light">
+                        <h6 class="mb-2 text-dark">🔍 Datos de la reserva:</h6>
                         <ul class="list-unstyled small mb-0">
                             <li><strong>Monto:</strong> ${{ $totalPrice }} {{ $currency }}</li>
                             <li><strong>Nombre:</strong> {{ $guestName ?? '—' }}</li>
@@ -33,96 +45,59 @@
                             <li><strong>Huéspedes:</strong> {{ $guestsCount ?? '—' }}</li>
                         </ul>
                     </div>
-
-                    <!-- Campos ocultos -->
-                    <input type="hidden" id="amount" value="{{ $totalPrice }}">
-                    <input type="hidden" id="currency" value="{{ $currency }}">
-                    <input type="hidden" id="guestName" value="{{ $guestName ?? '' }}">
-                    <input type="hidden" id="guestEmail" value="{{ $guestEmail ?? '' }}">
-                    <input type="hidden" id="guestPhone" value="{{ $guestPhone ?? '' }}">
-                    <input type="hidden" id="listingId" value="{{ $listingId ?? '' }}">
-                    <input type="hidden" id="checkIn" value="{{ $checkIn ?? '' }}">
-                    <input type="hidden" id="checkOut" value="{{ $checkOut ?? '' }}">
-                    <input type="hidden" id="quoteId" value="{{ $quoteId ?? '' }}">
-                    <input type="hidden" id="guestsCount" value="{{ $guestsCount ?? '' }}">
-
-                    <!-- Botones -->
-                    <div class="d-grid gap-2">
-                        <button id="card-button" class="btn text-white" style="background-color: #02006a;">Pagar ahora</button>
-                        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">Cancelar</a>
-                    </div>
-
-                    <!-- Resultado -->
-                    <div id="payment-status-container" class="alert mt-3 d-none" role="alert"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Square SDK -->
-<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-
+<!-- Stripe JS -->
+<script src="https://js.stripe.com/v3/"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-        const payments = Square.payments(
-            "{{ env('SQUARE_APPLICATION_ID') }}",
-            "{{ env('SQUARE_LOCATION_ID') }}"
-        );
+    const stripe = Stripe("{{ $stripeKey }}");
+    const clientSecret = "{{ $clientSecret }}";
 
-        const card = await payments.card();
-        await card.attach("#payment-form-container");
+    let elements;
 
-        const button = document.getElementById('card-button');
+    document.addEventListener("DOMContentLoaded", async function () {
+        elements = stripe.elements({ clientSecret });
 
-        button.addEventListener('click', async function () {
-            const result = await card.tokenize();
-            if (result.status !== 'OK') {
-                alert("❌ No se pudo procesar el método de pago. Intenta con otra tarjeta.");
-                return;
-            }
+        const paymentElement = elements.create("payment", {
+            layout: "tabs" // puedes usar accordion o auto
+        });
 
-            // Capturar los campos ocultos
-            const payload = {
-                source_id: result.token,
-                amount: parseInt(document.getElementById('amount').value) * 100,
-                currency: document.getElementById('currency').value,
-                listing_id: document.getElementById('listingId').value,
-                quote_id: document.getElementById('quoteId').value,
-                check_in: document.getElementById('checkIn').value,
-                check_out: document.getElementById('checkOut').value,
-                guests_count: parseInt(document.getElementById('guestsCount').value),
-                guest_name: document.getElementById('guestName').value,
-                guest_email: document.getElementById('guestEmail').value,
-                guest_phone: document.getElementById('guestPhone').value
-            };
+        paymentElement.mount("#payment-element");
 
-            try {
-                const response = await fetch("{{ route('square.pagar') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify(payload),
-                    redirect: "follow"  // importante
-                });
+        const form = document.getElementById('payment-form');
+        const messageContainer = document.getElementById('payment-message');
+        const submitButton = document.getElementById('submit');
 
-                // Si la respuesta fue redirección (Laravel lo hará)
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    // Si no redirige, es porque hubo error
-                    const json = await response.json();
-                    alert("❌ Error: " + (json.error || "Pago fallido"));
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            submitButton.disabled = true;
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: "{{ route('stripe.redirect') }}"
                 }
+            });
 
-            } catch (error) {
-                alert("❌ Error inesperado durante el proceso de pago.");
+            if (error) {
+                showMessage(error.message || "Error en el pago");
+                submitButton.disabled = false;
             }
         });
+
+        function showMessage(message) {
+            messageContainer.textContent = message;
+            messageContainer.classList.remove("d-none");
+
+            setTimeout(() => {
+                messageContainer.classList.add("d-none");
+                messageContainer.textContent = "";
+            }, 5000);
+        }
     });
 </script>
-
 @endsection

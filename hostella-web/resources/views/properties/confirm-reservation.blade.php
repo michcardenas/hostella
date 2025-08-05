@@ -78,7 +78,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <h5 class="mb-3">Información del Huésped</h5>
-                            <form action="{{ route('properties.payment-form', ['id' => $property['_id']]) }}" method="POST">
+                            <form action="{{ route('properties.payment-form', ['propertyId' => $property['_id'], 'quoteId' => $quoteId]) }}" method="POST">
                                 @csrf
                                 <!-- Campos ocultos para datos de la reserva -->
                                 <input type="hidden" name="listingId" value="{{ $property['_id'] }}">

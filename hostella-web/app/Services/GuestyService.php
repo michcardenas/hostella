@@ -178,4 +178,9 @@ class GuestyService
 
         return $response->json();
     }
+
+    public function getQuoteById($quoteId)
+    {
+        return $this->makeRequest('GET', "/reservations/quotes/{$quoteId}");
+    }
 }
